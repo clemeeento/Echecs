@@ -4,7 +4,7 @@
 #include <assert.h>
 #include "item.h"
 #include "liste.h"
-#include "tableau.h"
+#include "echiquier.h"
 #include "deplacement.h"
 
 void afficherTableau(int **tableau)

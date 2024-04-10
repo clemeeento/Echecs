@@ -1,4 +1,4 @@
-#include "tableau.h"
+#include "echiquier.h"
 
 int **initialisationPartie()
 {

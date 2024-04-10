@@ -7,7 +7,7 @@
 #include <assert.h>
 #include "item.h"
 #include "liste.h"
-#include "tableau.h"
+#include "echiquier.h"
 
 int positionValidePion(int ** tableau, int initialX, int initialY, int finalX, int finalY);
 int positionValideFou(int ** tableau, int initialX, int initialY, int finalX, int finalY);
