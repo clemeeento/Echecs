@@ -592,3 +592,9 @@ int estEchecMat(int ** tableau, int couleur)
 
     return 1;
 }
+
+void deplacement(int **tableau, int initialX, int initialY, int finalX, int finalY)
+{
+    tableau[finalX][finalY] = tableau[initialX][initialY];
+    tableau[initialX][initialY] = 0;
+}

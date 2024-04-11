@@ -39,6 +39,21 @@ void libererItem(item * noeud)
     free(noeud);
 }
 
+void remplireItem(item * noeud, int ** tableau, int taille) 
+{
+    noeud->taille = taille;
+    noeud->tableau = (int **)malloc(taille * sizeof(int *));
+
+    for (int i = 0; i < taille; i=i+1) 
+    {
+        noeud->tableau[i] = (int *)malloc(taille * sizeof(int));
+        for (int j = 0; j < taille; j=j+1) 
+        {
+            noeud->tableau[i][j] = tableau[i][j];
+        }
+    }
+}
+
 liste * creerListe() 
 {
     liste * l = (liste *)malloc(sizeof(liste));
@@ -213,6 +228,7 @@ void afficherListe(liste * l)
             }
             printf("\n");
         }
+        printf("\n");
         noeud = noeud->suivant;
     }
 }

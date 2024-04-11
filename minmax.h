@@ -10,6 +10,9 @@
 #include "echiquier.h"
 #include "deplacement.h"
 
+#define PROFONDEUR 5
+
 void calculScore(item * noeud, int couleur);
+liste * generationCoups(item * noeud, int couleur);
 
 #endif

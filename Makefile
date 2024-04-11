@@ -7,7 +7,7 @@ echiquier.o: echiquier.c echiquier.h
 	gcc -c echiquier.c
 
 deplacement.o: deplacement.c deplacement.h
-	gcc -c positions.c
+	gcc -c deplacement.c
 
 minmax.o: minmax.c minmax.h
 	gcc -c minmax.c

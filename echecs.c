@@ -62,10 +62,17 @@ void testDeplacement(int ** tableau)
     }
 }
 
+void testGenerationCoups(int ** tableau)
+{
+    item * noeud = creerItem();
+    noeud->tableau = copieTableau(tableau);
+    liste * coups = generationCoups(noeud, 1);
+    afficherListe(coups);
+}
+
 int main()
 {
     int **tableau = initialisationPartie();
-    afficherTableau(tableau);
-    testDeplacement(tableau);
+    testGenerationCoups(tableau);
     return 0;
 }
