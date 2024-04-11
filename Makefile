@@ -9,8 +9,11 @@ echiquier.o: echiquier.c echiquier.h
 deplacement.o: deplacement.c deplacement.h
 	gcc -c positions.c
 
-echecs: echecs.c liste.c echiquier.c deplacement.c liste.h echiquier.h deplacement.h item.h
-	gcc -o echecs echecs.c liste.c echiquier.c deplacement.c
+minmax.o: minmax.c minmax.h
+	gcc -c minmax.c
+
+echecs: echecs.c liste.c echiquier.c deplacement.c minmax.c liste.h echiquier.h deplacement.h minmax.h item.h 
+	gcc -o echecs echecs.c liste.c echiquier.c deplacement.c minmax.c
 
 clean:	
 	rm -f echecs *.o

@@ -65,12 +65,14 @@ int **initialisationPartie()
 
 int ** copieTableau(int **tableau)
 {
+    // Création d'un tableau de la même taille
     int **copie = (int**)malloc(tailleTableau*sizeof(int*));
     for (int i=0; i<tailleTableau; i=i+1)
     {
         copie[i] = (int*)malloc(tailleTableau*sizeof(int));
     }
 
+    // Copie des valeurs
     for(int i=0; i<tailleTableau; i=i+1)
     {
         for(int j=0; j<tailleTableau; j=j+1)
@@ -80,11 +82,4 @@ int ** copieTableau(int **tableau)
     }
 
     return copie;
-}
-
-void deplacement(int **tableau, int initialX, int initialY, int finalX, int finalY)
-{
-    int piece = tableau[initialX][initialY];
-    tableau[finalX][finalY] = piece;
-    tableau[initialX][initialY] = 0;
 }

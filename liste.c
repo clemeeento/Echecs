@@ -22,6 +22,7 @@ item * creerItem()
     noeud->taille = 0;
     noeud->tableau = NULL;
     noeud->profondeur = 0;
+    noeud->score = 0;
     noeud->parent = NULL;
     noeud->precedent = NULL;
     noeud->suivant = NULL;

@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "item.h"
-#include "liste.h"
 #include "echiquier.h"
 
 int positionValidePion(int ** tableau, int initialX, int initialY, int finalX, int finalY);
@@ -21,5 +19,7 @@ int estEchec(int ** tableau, int couleur, int posX, int posY);
 int deplacementValide(int ** tableau, int initialX, int initialY, int finalX, int finalY);
 
 int estEchecMat(int ** tableau, int couleur);
+
+void deplacement(int **tableau, int initialX, int initialY, int finalX, int finalY);
 
 #endif

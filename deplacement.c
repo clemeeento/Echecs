@@ -562,7 +562,7 @@ int deplacementValide(int ** tableau, int initialX, int initialY, int finalX, in
     return 0;
 }
 
-//Détermine si le roi est echet et mat
+//Détermine si le roi est echet et mat pour une couleur donnée
 int estEchecMat(int ** tableau, int couleur)
 {
     // Parcours des cases du tableau

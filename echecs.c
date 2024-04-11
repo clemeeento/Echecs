@@ -6,6 +6,7 @@
 #include "liste.h"
 #include "echiquier.h"
 #include "deplacement.h"
+#include "minmax.h"
 
 void afficherTableau(int **tableau)
 {
