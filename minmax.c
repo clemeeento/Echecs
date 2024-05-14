@@ -135,7 +135,6 @@ int minimax(item *noeud, int profondeur, int couleur, int maximizingPlayer) {
             meilleurScore = min(meilleurScore, score);
         }
     }
-    libererListe(coups);
     return meilleurScore;
 }
 
@@ -151,8 +150,7 @@ item *trouverMeilleurCoup(item *etatInitial, int couleur) {
             meilleurCoup = coup;
         }
     }
-    libererListe(coups);
-    return meilleurCoup;
+   return meilleurCoup;
 }
 
 void affichetouslescoupsRec(item * noeud){

@@ -67,8 +67,10 @@ void testpartie(int ** tableau)
     int i = 0 ; 
     item * noeud = creerItem();
     noeud->tableau = tableau;
+        afficherTableau(noeud->tableau);        
+
     noeud = trouverMeilleurCoup(noeud, a);
-    afficherTableau(noeud->tableau);
+    afficherTableau(noeud->tableau);        
     
 
 }
