@@ -1,6 +1,24 @@
 #include "minmax.h"
+#include <limits.h> 
 
-void calculScore(item * noeud, int couleur)
+int max(int a, int b) {
+    if(a>b)
+    return a;
+    else{
+        return b;
+
+    }
+}
+int min(int a, int b) {
+    if(a<b){
+        return a;
+    }
+    else{
+        return b;
+    }
+}
+
+int calculScore(item * noeud, int couleur)
 {
     int score = 0;
     for(int i=0; i<tailleTableau; i=i+1)
@@ -22,6 +40,8 @@ void calculScore(item * noeud, int couleur)
         score = score - 20;
     }
     noeud->score = noeud->score + score;
+    return noeud->score; 
+
 }
 
 liste * generationCoups(item * noeud, int couleur)
@@ -60,4 +80,99 @@ liste * generationCoups(item * noeud, int couleur)
         }
     }
     return coups;
+}
+
+
+
+void generationCoupsRec(item *noeud, liste *coups, int couleur, int profondeur) {
+    if (profondeur == 4 || estEchecMat(noeud->tableau, couleur)) {
+        return;
+    }
+
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < tailleTableau; j++) {
+            if (noeud->tableau[i][j] / 10 == couleur) {
+                for (int k = 0; k < tailleTableau; k++) {
+                    for (int l = 0; l < tailleTableau; l++) {
+                        if (deplacementValide(noeud->tableau, i, j, k, l)) {
+                            item *coup = creerItem();
+                            coup->tableau = copieTableau(noeud->tableau);
+                            deplacement(coup->tableau, i, j, k, l);
+                            coup->profondeur = noeud->profondeur + 1;
+                            coup->parent = noeud;
+                            calculScore(coup, couleur);
+                            ajouterDernier(coups, coup);
+
+                            // Appel récursif
+                            generationCoupsRec(coup, coups, couleur, profondeur + 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Fonction wrapper pour initialiser la recherche
+liste *generationCoups2(item *noeud, int couleur) {
+    liste *coups = creerListe();
+    generationCoupsRec(noeud, coups, couleur, noeud->profondeur);
+    return coups;
+}
+int minimax(item *noeud, int profondeur, int couleur, int maximizingPlayer) {
+    if (profondeur == 0 || estEchecMat(noeud->tableau, couleur)) {
+        return calculScore(noeud, couleur);
+    }
+
+    int meilleurScore = maximizingPlayer ? INT_MIN : INT_MAX;
+
+    liste *coups = generationCoups(noeud, couleur);
+    for (item *coup = coups->premier; coup != NULL; coup = coup->suivant) {
+        int score = minimax(coup, profondeur - 1, 3 - couleur, !maximizingPlayer);
+        if (maximizingPlayer) {
+            meilleurScore = max(meilleurScore, score);
+        } else {
+            meilleurScore = min(meilleurScore, score);
+        }
+    }
+    libererListe(coups);
+    return meilleurScore;
+}
+
+item *trouverMeilleurCoup(item *etatInitial, int couleur) {
+    int meilleurScore = INT_MIN;
+    item *meilleurCoup = NULL;
+
+    liste *coups = generationCoups(etatInitial, couleur);
+    for (item *coup = coups->premier; coup != NULL; coup = coup->suivant) {
+        int score = minimax(coup, 4 - 1, 3 - couleur, 0);  // 0 indique le joueur minimisant après ce coup
+        if (score > meilleurScore) {
+            meilleurScore = score;
+            meilleurCoup = coup;
+        }
+    }
+    libererListe(coups);
+    return meilleurCoup;
+}
+
+void affichetouslescoupsRec(item * noeud){
+    if(noeud->profondeur == 4){
+        afficherTableau(noeud->tableau);
+        return;
+    }
+    else {
+        afficherTableau(noeud->tableau);
+        affichetouslescoupsRec(noeud->suivant);
+    
+    }
+}
+void affichetouslescoups(liste * coups){
+    item * courant = coups->premier;
+    //affichetouslescoupsRec(courant);
+    while(courant->profondeur != 4){
+        afficherTableau(courant->tableau);
+        courant = courant->suivant;
+    }
+
+
 }

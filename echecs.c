@@ -55,24 +55,27 @@ void testDeplacement(int ** tableau)
             if(deplacementValide(tableau, initiale/10, initiale%10, finale/10, finale%10) && tableau[initiale/10][initiale%10]/10 == tour)
             {
                 deplacement(tableau, initiale/10, initiale%10, finale/10, finale%10);  
-                afficherTableau(tableau);    
                 tour = 1; 
             }
         }
     }
 }
 
-void testGenerationCoups(int ** tableau)
-{
+
+void testpartie(int ** tableau)
+{   int a = 1;
+    int i = 0 ; 
     item * noeud = creerItem();
-    noeud->tableau = copieTableau(tableau);
-    liste * coups = generationCoups(noeud, 1);
-    afficherListe(coups);
+    noeud->tableau = tableau;
+    noeud = trouverMeilleurCoup(noeud, a);
+    afficherTableau(noeud->tableau);
+    
+
 }
 
 int main()
 {
     int **tableau = initialisationPartie();
-    testGenerationCoups(tableau);
+    testpartie(tableau);
     return 0;
 }
