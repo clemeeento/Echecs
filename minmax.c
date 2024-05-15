@@ -150,7 +150,7 @@ item *trouverMeilleurCoup(item *etatInitial, int couleur) {
             meilleurCoup = coup;
         }
     }
-   return meilleurCoup;
+    return meilleurCoup;
 }
 
 void affichetouslescoupsRec(item * noeud){
