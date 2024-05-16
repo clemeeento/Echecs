@@ -216,7 +216,6 @@ void ajouterDernier(liste * l, item * noeud)
 void afficherListe(liste * l) 
 {
     item * noeud = l->premier;
-    int i;
 
     while (noeud != NULL) 
     {

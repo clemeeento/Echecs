@@ -48,8 +48,6 @@ int positionValidePion(int ** tableau, int initialX, int initialY, int finalX, i
                 return 1;
             }
         }
-
-        return 0;
     }
 
     // Pion noir
@@ -98,8 +96,9 @@ int positionValidePion(int ** tableau, int initialX, int initialY, int finalX, i
             }
         }
 
-        return 0;
     }
+
+    return 0;
 }
 
 // Détermine si un déplacement d'un fou est valide avec ses coordonnées X et Y initiales et finales

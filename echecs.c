@@ -7,72 +7,11 @@
 #include "echiquier.h"
 #include "deplacement.h"
 #include "minmax.h"
-
-void afficherTableau(int **tableau)
-{
-    printf("\n");
-    for(int i=0; i<tailleTableau; i=i+1)
-    {
-        for(int j=0; j<tailleTableau; j=j+1)
-        {
-            printf("%d ", tableau[j][i]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}        
-
-
-void testDeplacement(int ** tableau)
-{
-    int tour = 1;
-    int initiale, finale;
-    while(!estEchecMat(tableau, tour))
-    {
-        while(tour==1)
-        {
-            printf("Tour des blancs \n");
-            printf("Entrer la position de la pièce que l'on veut deplacer :\n");
-            scanf("%d",initiale);
-            printf("Entrer position finale :\n");
-            scanf("%d",finale);
-            if(deplacementValide(tableau, initiale/10, initiale%10, finale/10, finale%10) && tableau[initiale/10][initiale%10]/10 == tour)
-            {
-                deplacement(tableau, initiale/10, initiale%10, finale/10, finale%10);  
-                afficherTableau(tableau);    
-                tour = 2; 
-            }
-            
-        }
-
-        while(tour==2)
-        {
-            printf("Tour des noirs \n");
-            printf("Entrer la position de la pièce que l'on veut deplacer :\n");
-            scanf("%d",initiale);
-            printf("Entrer position finale :\n");
-            scanf("%d",finale);
-            if(deplacementValide(tableau, initiale/10, initiale%10, finale/10, finale%10) && tableau[initiale/10][initiale%10]/10 == tour)
-            {
-                deplacement(tableau, initiale/10, initiale%10, finale/10, finale%10);  
-                afficherTableau(tableau);    
-                tour = 1; 
-            }
-        }
-    }
-}
-
-void testGenerationCoups(int ** tableau)
-{
-    item * noeud = creerItem();
-    noeud->tableau = copieTableau(tableau);
-    liste * coups = generationCoups(noeud, 1);
-    afficherListe(coups);
-}
+#include "graphique.h"
 
 int main()
 {
-    int **tableau = initialisationPartie();
-    testGenerationCoups(tableau);
+    int ** tableau = initialisationPartie();
+    test(tableau);                                      
     return 0;
 }

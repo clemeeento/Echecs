@@ -14,6 +14,5 @@
 
 void calculScore(item * noeud, int couleur);
 liste * generationCoups(item * noeud, int couleur);
-item * generationArbre(item * noeud);
 
 #endif

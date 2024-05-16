@@ -1,6 +1,6 @@
 #include "echiquier.h"
 
-int **initialisationPartie()
+int ** initialisationPartie()
 {
     int **initial = (int**)malloc(tailleTableau*sizeof(int*));
     for (int i=0; i<tailleTableau; i=i+1)

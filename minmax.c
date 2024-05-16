@@ -109,8 +109,3 @@ liste * generationCoups(item * noeud, int couleur)
     }
     return coups;
 }
-
-item * generationArbre(item * noeud)
-{
-    
-}
