@@ -232,3 +232,4 @@ void afficherListe(liste * l)
         noeud = noeud->suivant;
     }
 }
+

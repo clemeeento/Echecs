@@ -9,17 +9,65 @@ void calculScore(item * noeud, int couleur)
         {
             if(noeud->tableau[i][j]/10 == couleur)
             {
-                score = score + noeud->tableau[i][j]%10;
+                if(noeud->tableau[i][j]%10 == 1) // Pion
+                {
+                    score = score + 1;
+                }
+                else if(noeud->tableau[i][j]%10 == 2) // Cavalier
+                {
+                    score = score + 3;
+                }
+                else if(noeud->tableau[i][j]%10 == 3) // Fou
+                {
+                    score = score + 3;
+                }
+                else if(noeud->tableau[i][j]%10 == 4) // Tour
+                {
+                    score = score + 5;
+                }
+                else if(noeud->tableau[i][j]%10 == 5) // Dame
+                {
+                    score = score + 9;
+                }
             }
             else
             {
-                score = score - noeud->tableau[i][j]%10;
+                if(noeud->tableau[i][j]%10 == 1) // Pion
+                {
+                    score = score - 1;
+                }
+                else if(noeud->tableau[i][j]%10 == 2) // Cavalier
+                {
+                    score = score - 3;
+                }
+                else if(noeud->tableau[i][j]%10 == 3) // Fou
+                {
+                    score = score - 3;
+                }
+                else if(noeud->tableau[i][j]%10 == 4) // Tour
+                {
+                    score = score - 5;
+                }
+                else if(noeud->tableau[i][j]%10 == 5) // Dame
+                {
+                    score = score - 9;
+                }
             }
         }
     }
-    if(estEchecMat(noeud->tableau, couleur))
+    if(couleur == 1)
     {
-        score = score - 20;
+        if(estEchecMat(noeud->tableau, 1))
+        {
+            score = score - 100;
+        }
+    }
+    else
+    {
+        if(estEchecMat(noeud->tableau, 2))
+        {
+            score = score - 100;
+        }
     }
     noeud->score = noeud->score + score;
 }
@@ -60,4 +108,9 @@ liste * generationCoups(item * noeud, int couleur)
         }
     }
     return coups;
+}
+
+item * generationArbre(item * noeud)
+{
+    
 }
