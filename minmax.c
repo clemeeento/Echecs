@@ -120,16 +120,18 @@ item * remonterArbre(item * noeud)
     return tmp;
 }
 
-int ** minmax(item * noeud, item * meilleurCoup, int meilleurScore, int couleur, int profondeur)
+char ** minmax(item * noeud, item * meilleurCoup, int meilleurScore, int couleur, int profondeur)
 {
     if(noeud->profondeur == 1 && noeud->suivant == NULL)
     {
-        int ** tableau = copieTableau(meilleurCoup->tableau);
+        char ** tableau = copieTableau(meilleurCoup->tableau);
+
         while(noeud->precedent != NULL)
         {
             libererItem(noeud);
             noeud = noeud->precedent;
         }
+
         return tableau;
     }
     else

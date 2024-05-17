@@ -8,22 +8,7 @@
 #include "deplacement.h"
 #include "minmax.h"
 #include "graphique.h"
-
-void afficherTableau(int **tableau)
-{
-    printf("\n");
-    for(int i=0; i<tailleTableau; i=i+1)
-    {
-        for(int j=0; j<tailleTableau; j=j+1)
-        {
-            printf("%d ", tableau[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}        
-
-
+ 
 
 int main()
 {
@@ -32,7 +17,7 @@ int main()
     int x, y;
     int initialX, initialY, finalX, finalY;
 
-    int ** echiquier = initialisationPartie();
+    char ** echiquier = initialisationPartie();
 
 
     // Initialiser SDL

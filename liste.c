@@ -1,6 +1,6 @@
 #include "liste.h"
 
-int comparaisonTableau(int ** tableau1, int ** tableau2, int taille)
+int comparaisonTableau(char ** tableau1, char ** tableau2, int taille)
 {
 	for(int i = 0;i<taille;i=i+1)
 	{
@@ -39,14 +39,14 @@ void libererItem(item * noeud)
     free(noeud);
 }
 
-void remplireItem(item * noeud, int ** tableau, int taille) 
+void remplireItem(item * noeud, char ** tableau, int taille) 
 {
     noeud->taille = taille;
-    noeud->tableau = (int **)malloc(taille * sizeof(int *));
+    noeud->tableau = (char **)malloc(taille * sizeof(char *));
 
     for (int i = 0; i < taille; i=i+1) 
     {
-        noeud->tableau[i] = (int *)malloc(taille * sizeof(int));
+        noeud->tableau[i] = (char *)malloc(taille * sizeof(int));
         for (int j = 0; j < taille; j=j+1) 
         {
             noeud->tableau[i][j] = tableau[i][j];
@@ -85,7 +85,7 @@ int nombreElements(liste * l)
     return l->nombreElements;
 }
 
-item *dansListe(liste * l, int ** tableau, int taille) 
+item *dansListe(liste * l, char ** tableau, int taille) 
 {
     int i;
 	int nbElements;

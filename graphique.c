@@ -83,7 +83,7 @@ SDL_Texture** chargerPieces(SDL_Renderer* renderer)
     return pieces;
 }
 
-void afficherPieces(SDL_Texture** pieces, int ** echiquier, SDL_Renderer* renderer)
+void afficherPieces(SDL_Texture** pieces, char ** echiquier, SDL_Renderer* renderer)
 {
     // Dimensions d'une case de l'échiquier
     int largeurCase = LARGEUR_FENETRE / tailleTableau;

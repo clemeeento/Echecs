@@ -18,7 +18,7 @@
 void afficherEchiquier(SDL_Renderer* renderer);
 SDL_Texture* chargerTexture(const char* chemin, SDL_Renderer* renderer);
 SDL_Texture** chargerPieces(SDL_Renderer* renderer);
-void afficherPieces(SDL_Texture** pieces, int ** echiquier, SDL_Renderer* renderer);
+void afficherPieces(SDL_Texture** pieces, char ** echiquier, SDL_Renderer* renderer);
 
 
 #endif

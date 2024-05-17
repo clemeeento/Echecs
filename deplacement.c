@@ -1,7 +1,7 @@
 #include "deplacement.h"
 
 // Détermine si un déplacement d'un pion est valide avec ses coordonnées X et Y initiales et finales
-int positionValidePion(int ** tableau, int initialX, int initialY, int finalX, int finalY)
+int positionValidePion(char ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
     // Pion blanc
     if(tableau[initialX][initialY]/10 == 1)
@@ -22,7 +22,7 @@ int positionValidePion(int ** tableau, int initialX, int initialY, int finalX, i
             }
             
             // Si une pièce est présente sur le chemin
-            if(tableau[initialX][initialY + 1] != 0)
+            if(tableau[initialX][initialY + 1] != 0 || tableau[initialX][initialY + 2] != 0)
             {
                 return 0;
             }
@@ -69,7 +69,7 @@ int positionValidePion(int ** tableau, int initialX, int initialY, int finalX, i
             }
             
             // Si une pièce est présente sur le chemin
-            if(tableau[initialX][initialY - 1] != 0)
+            if(tableau[initialX][initialY - 1] != 0 || tableau[initialX][initialY - 2] != 0)
             {
                 return 0;
             }
@@ -102,7 +102,7 @@ int positionValidePion(int ** tableau, int initialX, int initialY, int finalX, i
 }
 
 // Détermine si un déplacement d'un fou est valide avec ses coordonnées X et Y initiales et finales
-int positionValideFou(int ** tableau, int initialX, int initialY, int finalX, int finalY)
+int positionValideFou(char ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
     // Déplacement en diagonale
     if(abs(finalX - initialX) == abs(finalY - initialY))
@@ -174,7 +174,7 @@ int positionValideFou(int ** tableau, int initialX, int initialY, int finalX, in
 }
 
 // Détermine si un déplacement d'un cavalier est valide avec ses coordonnées X et Y initiales et finales
-int positionValideCavalier(int ** tableau, int initialX, int initialY, int finalX, int finalY)
+int positionValideCavalier(char ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
     // Déplacement en L
     if((abs(finalX - initialX) == 2 && abs(finalY - initialY) == 1) || (abs(finalX - initialX) == 1 && abs(finalY - initialY) == 2))
@@ -192,7 +192,7 @@ int positionValideCavalier(int ** tableau, int initialX, int initialY, int final
 }
 
 // Détermine si un déplacement d'une tour est valide avec ses coordonnées X et Y initiales et finales
-int positionValideTour(int ** tableau, int initialX, int initialY, int finalX, int finalY)
+int positionValideTour(char ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
     // Si une pièce allié est présente sur la case finale
     if(tableau[finalX][finalY]/10 == tableau[initialX][initialY]/10)
@@ -268,7 +268,7 @@ int positionValideTour(int ** tableau, int initialX, int initialY, int finalX, i
 }
 
 // Détermine si un déplacement d'une dame est valide avec ses coordonnées X et Y initiales et finales
-int positionValideDame(int ** tableau, int initialX, int initialY, int finalX, int finalY)
+int positionValideDame(char ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
     // Si une pièce allié est présente sur la case finale
     if(tableau[finalX][finalY]/10 == tableau[initialX][initialY]/10)
@@ -404,7 +404,7 @@ int positionValideDame(int ** tableau, int initialX, int initialY, int finalX, i
 }
 
 // Détermine si un déplacement d'un roi est valide avec ses coordonnées X et Y initiales et finales
-int positionValideRoi(int ** tableau, int initialX, int initialY, int finalX, int finalY)
+int positionValideRoi(char ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
     // Si une pièce allié est présente sur la case finale
     if(tableau[finalX][finalY]/10 == tableau[initialX][initialY]/10)
@@ -434,7 +434,7 @@ int positionValideRoi(int ** tableau, int initialX, int initialY, int finalX, in
 }
     
 // Détermine si un déplacement est valide avec ses coordonnées X et Y initiales et finales
-int positionValide(int ** tableau, int initialX, int initialY, int finalX, int finalY)
+int positionValide(char ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
     // Si la case d'arrivée est hors du tableau
     if(finalX < 0 || finalX >= tailleTableau || finalY < 0 || finalY >= tailleTableau)
@@ -497,7 +497,7 @@ int positionValide(int ** tableau, int initialX, int initialY, int finalX, int f
 }
 
 // Détermine si le roi est en échec pour une couleur donnée
-int estEchec(int ** tableau, int couleur)
+int estEchec(char ** tableau, int couleur)
 {
     int xRoi, yRoi;
 
@@ -536,9 +536,9 @@ int estEchec(int ** tableau, int couleur)
 }
 
 // Détermine si un déplacement est valide avec ses coordonnées X et Y initiales et finales et si le roi n'est pas en échec
-int deplacementValide(int ** tableau, int initialX, int initialY, int finalX, int finalY)
+int deplacementValide(char ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
-    int ** temporaire;
+    char ** temporaire;
     // Si le déplacement est valide
     if(positionValide(tableau, initialX, initialY, finalX, finalY))
     {
@@ -560,7 +560,7 @@ int deplacementValide(int ** tableau, int initialX, int initialY, int finalX, in
 }
 
 //Détermine si le roi est echet et mat pour une couleur donnée
-int estEchecMat(int ** tableau, int couleur)
+int estEchecMat(char ** tableau, int couleur)
 {
     // Parcours des cases du tableau
     for(int i=0; i<tailleTableau; i=i+1)
@@ -585,12 +585,11 @@ int estEchecMat(int ** tableau, int couleur)
             }
         }
     }
-    printf("Echec et mat\n");
 
     return 1;
 }
 
-void deplacement(int **tableau, int initialX, int initialY, int finalX, int finalY)
+void deplacement(char **tableau, int initialX, int initialY, int finalX, int finalY)
 {
     // Cas de la promotion du pion
     if(tableau[initialX][initialY]%10 == 1 && (finalY == 0 || finalY == tailleTableau - 1))
