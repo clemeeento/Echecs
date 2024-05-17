@@ -547,8 +547,6 @@ int deplacementValide(int ** tableau, int initialX, int initialY, int finalX, in
         temporaire = copieTableau(tableau);
         deplacement(temporaire, initialX, initialY, finalX, finalY);
 
-        printf("estEchec : %d\n", estEchec(temporaire, tableau[initialX][initialY]/10));
-
         // Si le roi est en échec une fois le déplacement effectué
         if(estEchec(temporaire, tableau[initialX][initialY]/10))
         {
@@ -595,6 +593,15 @@ int estEchecMat(int ** tableau, int couleur)
 
 void deplacement(int **tableau, int initialX, int initialY, int finalX, int finalY)
 {
-    tableau[finalX][finalY] = tableau[initialX][initialY];
-    tableau[initialX][initialY] = 0;
+    // Cas de la promotion du pion
+    if(tableau[initialX][initialY]%10 == 1 && (finalY == 0 || finalY == tailleTableau - 1))
+    {
+        tableau[finalX][finalY] = tableau[initialX][initialY] + 4;
+        tableau[initialX][initialY] = 0;
+    }
+    else
+    {
+        tableau[finalX][finalY] = tableau[initialX][initialY];
+        tableau[initialX][initialY] = 0;
+    }
 }
