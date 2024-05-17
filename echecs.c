@@ -16,7 +16,7 @@ void afficherTableau(int **tableau)
     {
         for(int j=0; j<tailleTableau; j=j+1)
         {
-            printf("%d ", tableau[j][i]);
+            printf("%d ", tableau[i][j]);
         }
         printf("\n");
     }
@@ -83,7 +83,7 @@ int main()
             }
             if (event.type == SDL_MOUSEBUTTONDOWN)
             {
-                SDL_GetMouseState(&y, &x);
+                SDL_GetMouseState(&x, &y);
                 
                 // Convertir les coordonnées de la souris en coordonnées de l'échiquier
                 initialX = x / (LARGEUR_FENETRE / tailleTableau);
@@ -91,15 +91,15 @@ int main()
             }   
             if(event.type == SDL_MOUSEBUTTONUP)
             {
-                SDL_GetMouseState(&y, &x);
+                SDL_GetMouseState(&x, &y);
                 
                 // Convertir les coordonnées de la souris en coordonnées de l'échiquier
                 finalX = x / (LARGEUR_FENETRE / tailleTableau);
                 finalY = y / (HAUTEUR_FENETRE / tailleTableau);
 
                 printf("Deplacement de (%d, %d) vers (%d, %d)\n", initialX, initialY, finalX, finalY); 
-                printf("Piece de la case de depart : %d\n", echiquier[initialY][initialX]);
-                printf("Piece de la case d'arrivee : %d\n", echiquier[finalY][finalX]);
+                printf("Piece de la case de depart : %d\n", echiquier[initialX][initialY]);
+                printf("Piece de la case d'arrivee : %d\n", echiquier[finalX][finalY]);
 
                 if(echiquier[initialY][initialX]/10 == tour)
                 {

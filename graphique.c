@@ -18,8 +18,8 @@ void afficherEchiquier(SDL_Renderer* renderer)
         for (int j = 0; j < tailleTableau; j++)
         {
             // Calculer les coordonnées de la case
-            int x = j * largeurCase;
-            int y = i * hauteurCase;
+            int x = i * largeurCase;
+            int y = j * hauteurCase;
             
             // Dessiner la case
             SDL_Rect caseRect = {x, y, largeurCase, hauteurCase};
@@ -95,8 +95,8 @@ void afficherPieces(SDL_Texture** pieces, int ** echiquier, SDL_Renderer* render
         for (int j = 0; j < tailleTableau; j++)
         {
             // Calculer les coordonnées de la case
-            int x = j * largeurCase;
-            int y = i * hauteurCase;
+            int x = i * largeurCase;
+            int y = j * hauteurCase;
             
             // Dessiner la pièce sur la case si elle existe
             int piece = echiquier[j][i];

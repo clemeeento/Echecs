@@ -436,6 +436,7 @@ int positionValideRoi(int ** tableau, int initialX, int initialY, int finalX, in
 // Détermine si un déplacement est valide avec ses coordonnées X et Y initiales et finales
 int positionValide(int ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
+    printf("position valide %d \n", tableau[initialX][initialY]);
     // Si la case d'arrivée est hors du tableau
     if(finalX < 0 || finalX >= tailleTableau || finalY < 0 || finalY >= tailleTableau)
     {
