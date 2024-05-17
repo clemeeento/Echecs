@@ -109,3 +109,63 @@ liste * generationCoups(item * noeud, int couleur)
     }
     return coups;
 }
+
+item * remonterArbre(item * noeud)
+{
+    item * tmp = noeud;
+    while(tmp->profondeur != 1)
+    {
+        tmp = tmp->parent;
+    }
+    return tmp;
+}
+
+int ** minmax(item * noeud, item * meilleurCoup, int meilleurScore, int couleur, int profondeur)
+{
+    if(noeud->profondeur == 1 && noeud->suivant == NULL)
+    {
+        int ** tableau = copieTableau(meilleurCoup->tableau);
+        while(noeud->precedent != NULL)
+        {
+            libererItem(noeud);
+            noeud = noeud->precedent;
+        }
+        return tableau;
+    }
+    else
+    {
+        if(noeud->profondeur < profondeur)
+        {
+
+            liste * coups = generationCoups(noeud, couleur);
+            noeud = coups->premier;
+
+            minmax(noeud, meilleurCoup, meilleurScore, couleur, profondeur);
+        }
+
+        else
+        {
+            while(noeud->suivant != NULL)
+            {
+                if(noeud->score > meilleurScore)
+                {
+                    meilleurScore = noeud->score;
+                    meilleurCoup = remonterArbre(noeud);
+                }
+
+                noeud = noeud->suivant;
+                libererItem(noeud->precedent);
+            }
+
+            noeud = noeud->parent;
+
+            while(noeud->suivant == NULL)
+            {
+                noeud = noeud->parent;
+            }
+
+            noeud = noeud->suivant;
+            minmax(noeud, meilleurCoup, meilleurScore, couleur, profondeur);
+        }
+    }
+}

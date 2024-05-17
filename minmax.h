@@ -10,9 +10,11 @@
 #include "echiquier.h"
 #include "deplacement.h"
 
-#define PROFONDEUR 5
+#define PROFONDEUR 4
 
 void calculScore(item * noeud, int couleur);
 liste * generationCoups(item * noeud, int couleur);
+item * remonterArbre(item * noeud);
+int ** minmax(item * noeud, item * meilleurCoup, int meilleurScore, int couleur, int profondeur);
 
 #endif

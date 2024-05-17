@@ -75,38 +75,56 @@ int main()
     SDL_Event event;
     while (!quit)
     {
-        if (SDL_WaitEvent(&event))
+        if (tour==1) // Joueur
         {
-            if (event.type == SDL_QUIT)
+           if (SDL_WaitEvent(&event))
             {
-                quit = 1;
-            }
-            if (event.type == SDL_MOUSEBUTTONDOWN)
-            {
-                SDL_GetMouseState(&x, &y);
-                
-                // Convertir les coordonnées de la souris en coordonnées de l'échiquier
-                initialX = x / (LARGEUR_FENETRE / tailleTableau);
-                initialY = y / (HAUTEUR_FENETRE / tailleTableau);
-                
-            }   
-            if(event.type == SDL_MOUSEBUTTONUP)
-            {
-                SDL_GetMouseState(&x, &y);
-                
-                // Convertir les coordonnées de la souris en coordonnées de l'échiquier
-                finalX = x / (LARGEUR_FENETRE / tailleTableau);
-                finalY = y / (HAUTEUR_FENETRE / tailleTableau);
-
-                if(echiquier[initialX][initialY]/10 == tour)
+                if (event.type == SDL_QUIT)
                 {
-                    if(deplacementValide(echiquier, initialX, initialY, finalX, finalY))
+                    quit = 1;
+                }
+
+                if (event.type == SDL_MOUSEBUTTONDOWN)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    
+                    // Convertir les coordonnées de la souris en coordonnées de l'échiquier
+                    initialX = x / (LARGEUR_FENETRE / tailleTableau);
+                    initialY = y / (HAUTEUR_FENETRE / tailleTableau);
+                    
+                }   
+                if(event.type == SDL_MOUSEBUTTONUP)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    
+                    // Convertir les coordonnées de la souris en coordonnées de l'échiquier
+                    finalX = x / (LARGEUR_FENETRE / tailleTableau);
+                    finalY = y / (HAUTEUR_FENETRE / tailleTableau);
+
+                    if(echiquier[initialX][initialY]/10 == tour)
                     {
-                        deplacement(echiquier, initialX, initialY, finalX, finalY);
-                        tour = 3 - tour;
+                        if(deplacementValide(echiquier, initialX, initialY, finalX, finalY))
+                        {
+                            deplacement(echiquier, initialX, initialY, finalX, finalY);
+                            tour = 3 - tour;
+                        }
                     }
                 }
             }
+        }
+        else // Ordinateur
+        {
+            item * noeud = creerItem();
+            noeud->tableau = copieTableau(echiquier);
+
+            int meuilleurScore = -1000;
+            item * meilleurCoup = NULL;
+
+            echiquier = minmax(noeud, meilleurCoup, meuilleurScore, 2, PROFONDEUR);
+
+            tour = 3 - tour;
+
+            libererItem(meilleurCoup);
         }
 
         // Effacer le renderer

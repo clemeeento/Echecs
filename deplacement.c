@@ -445,8 +445,7 @@ int positionValide(int ** tableau, int initialX, int initialY, int finalX, int f
     // Si la case de depart est la meme que la case d'arrivee
     if(initialX == finalX && initialY == finalY)
     {
-        printf("InitialX : %d, InitialY : %d, FinalX : %d, FinalY : %d\n", initialX, initialY, finalX, finalY);
-        printf("Erreur : case de depart identique a la case d'arrivee\n");
+        //printf("Erreur : case de depart identique a la case d'arrivee\n");
         return 0;
     }
 
