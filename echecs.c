@@ -84,7 +84,6 @@ int main()
             if (event.type == SDL_MOUSEBUTTONDOWN)
             {
                 SDL_GetMouseState(&x, &y);
-                printf("Clic en (%d, %d)\n", x, y);
                 
                 // Convertir les coordonnées de la souris en coordonnées de l'échiquier
                 initialX = x / (LARGEUR_FENETRE / tailleTableau);
@@ -94,22 +93,16 @@ int main()
             if(event.type == SDL_MOUSEBUTTONUP)
             {
                 SDL_GetMouseState(&x, &y);
-                printf("Relachement en (%d, %d)\n", x, y);
                 
                 // Convertir les coordonnées de la souris en coordonnées de l'échiquier
                 finalX = x / (LARGEUR_FENETRE / tailleTableau);
                 finalY = y / (HAUTEUR_FENETRE / tailleTableau);
 
-                printf("Deplacement de (%d, %d) vers (%d, %d)\n", initialX, initialY, finalX, finalY); 
-                printf("Piece de la case de depart : %d\n", echiquier[initialX][initialY]);
-                printf("Piece de la case d'arrivee : %d\n", echiquier[finalX][finalY]);
-
-                if(echiquier[initialY][initialX]/10 == tour)
+                if(echiquier[initialX][initialY]/10 == tour)
                 {
                     if(deplacementValide(echiquier, initialX, initialY, finalX, finalY))
                     {
                         deplacement(echiquier, initialX, initialY, finalX, finalY);
-                        afficherTableau(echiquier);
                         tour = 3 - tour;
                     }
                 }

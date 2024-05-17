@@ -15,7 +15,7 @@ int positionValideDame(int ** tableau, int initialX, int initialY, int finalX, i
 int positionValideRoi(int ** tableau, int initialX, int initialY, int finalX, int finalY);
 int positionValide(int ** tableau, int initialX, int initialY, int finalX, int finalY);
 
-int estEchec(int ** tableau, int couleur, int posX, int posY);
+int estEchec(int ** tableau, int couleur);
 int deplacementValide(int ** tableau, int initialX, int initialY, int finalX, int finalY);
 
 int estEchecMat(int ** tableau, int couleur);

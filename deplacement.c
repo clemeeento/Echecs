@@ -436,7 +436,6 @@ int positionValideRoi(int ** tableau, int initialX, int initialY, int finalX, in
 // Détermine si un déplacement est valide avec ses coordonnées X et Y initiales et finales
 int positionValide(int ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
-    printf("position valide %d \n", tableau[initialX][initialY]);
     // Si la case d'arrivée est hors du tableau
     if(finalX < 0 || finalX >= tailleTableau || finalY < 0 || finalY >= tailleTableau)
     {
@@ -446,6 +445,7 @@ int positionValide(int ** tableau, int initialX, int initialY, int finalX, int f
     // Si la case de depart est la meme que la case d'arrivee
     if(initialX == finalX && initialY == finalY)
     {
+        printf("InitialX : %d, InitialY : %d, FinalX : %d, FinalY : %d\n", initialX, initialY, finalX, finalY);
         printf("Erreur : case de depart identique a la case d'arrivee\n");
         return 0;
     }
@@ -460,42 +460,36 @@ int positionValide(int ** tableau, int initialX, int initialY, int finalX, int f
     // Cas du pion
     if(tableau[initialX][initialY]%10 == 1)
     {
-        printf("Pion\n");
         return positionValidePion(tableau, initialX, initialY, finalX, finalY);
     }
 
     // Cas du fou
     if(tableau[initialX][initialY]%10 == 2)
     {
-        printf("Fou\n");
         return positionValideFou(tableau, initialX, initialY, finalX, finalY);
     }
 
     // Cas du cavalier
     if(tableau[initialX][initialY]%10 == 3)
     {
-        printf("Cavalier\n");
         return positionValideCavalier(tableau, initialX, initialY, finalX, finalY);
     }
 
     // Cas de la tour
     if(tableau[initialX][initialY]%10 == 4)
     {
-        printf("Tour\n");
         return positionValideTour(tableau, initialX, initialY, finalX, finalY);
     }
 
     // Cas de la dame
     if(tableau[initialX][initialY]%10 == 5)
     {
-        printf("Dame\n");
         return positionValideDame(tableau, initialX, initialY, finalX, finalY);
     }
 
     // Cas du roi
     if(tableau[initialX][initialY]%10 == 6)
     {
-        printf("Roi\n");
         return positionValideRoi(tableau, initialX, initialY, finalX, finalY);
     }
 
@@ -503,46 +497,37 @@ int positionValide(int ** tableau, int initialX, int initialY, int finalX, int f
     return 0;
 }
 
-// Détermine si le roi est en échec sur une case donnée
-int estEchec(int ** tableau, int couleur, int posX, int posY)
+// Détermine si le roi est en échec pour une couleur donnée
+int estEchec(int ** tableau, int couleur)
 {
-    // Si le roi est blanc
-    if(couleur == 1)
+    int xRoi, yRoi;
+
+    // Parcours des cases du tableau
+    for(int i=0; i<tailleTableau; i=i+1)
     {
-        // Parcours des cases du tableau
-        for(int i=0; i<tailleTableau; i=i+1)
+        for(int j=0; j<tailleTableau; j=j+1)
         {
-            for(int j=0; j<tailleTableau; j=j+1)
+            // Si le roi est présent
+            if(tableau[i][j] == couleur*10 + 6)
             {
-                // Si une pièce noire est présente
-                if(tableau[i][j]/10 == 2)
-                {
-                    // Si le roi est en échec
-                    if(positionValide(tableau, i, j, posX, posY))
-                    {
-                        return 1;
-                    }
-                }
+                xRoi = i;
+                yRoi = j;
             }
         }
     }
 
-    // Si le roi est noir
-    if(couleur == 2)
+    // Parcours des cases du tableau
+    for(int i=0; i<tailleTableau; i=i+1)
     {
-        // Parcours des cases du tableau
-        for(int i=0; i<tailleTableau; i=i+1)
+        for(int j=0; j<tailleTableau; j=j+1)
         {
-            for(int j=0; j<tailleTableau; j=j+1)
+            // Si une pièce ennemie est présente
+            if(tableau[i][j]/10 != couleur && tableau[i][j] != 0)
             {
-                // Si une pièce blanche est présente
-                if(tableau[i][j]/10 == 1)
+                // Si le déplacement est valide
+                if(positionValide(tableau, i, j, xRoi, yRoi))
                 {
-                    // Si le roi est en échec
-                    if(positionValide(tableau, i, j, posX, posY))
-                    {
-                        return 1;
-                    }
+                    return 1;
                 }
             }
         }
@@ -562,8 +547,10 @@ int deplacementValide(int ** tableau, int initialX, int initialY, int finalX, in
         temporaire = copieTableau(tableau);
         deplacement(temporaire, initialX, initialY, finalX, finalY);
 
+        printf("estEchec : %d\n", estEchec(temporaire, tableau[initialX][initialY]/10));
+
         // Si le roi est en échec une fois le déplacement effectué
-        if(estEchec(temporaire, temporaire[initialX][initialY]/10, finalX, finalY))
+        if(estEchec(temporaire, tableau[initialX][initialY]/10))
         {
             free(temporaire);
             return 0;

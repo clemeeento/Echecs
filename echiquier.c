@@ -77,7 +77,7 @@ int ** copieTableau(int **tableau)
     {
         for(int j=0; j<tailleTableau; j=j+1)
         {
-            copie[j][i] = tableau[j][i];
+            copie[i][j] = tableau[i][j];
         }
     }
 
