@@ -84,14 +84,17 @@ int main()
             if (event.type == SDL_MOUSEBUTTONDOWN)
             {
                 SDL_GetMouseState(&x, &y);
+                printf("Clic en (%d, %d)\n", x, y);
                 
                 // Convertir les coordonnées de la souris en coordonnées de l'échiquier
                 initialX = x / (LARGEUR_FENETRE / tailleTableau);
                 initialY = y / (HAUTEUR_FENETRE / tailleTableau);
+                
             }   
             if(event.type == SDL_MOUSEBUTTONUP)
             {
                 SDL_GetMouseState(&x, &y);
+                printf("Relachement en (%d, %d)\n", x, y);
                 
                 // Convertir les coordonnées de la souris en coordonnées de l'échiquier
                 finalX = x / (LARGEUR_FENETRE / tailleTableau);

@@ -88,6 +88,7 @@ void afficherPieces(SDL_Texture** pieces, int ** echiquier, SDL_Renderer* render
     // Dimensions d'une case de l'échiquier
     int largeurCase = LARGEUR_FENETRE / tailleTableau;
     int hauteurCase = HAUTEUR_FENETRE / tailleTableau;
+    int x, y;
 
     // Parcourir les cases de l'échiquier
     for (int i = 0; i < tailleTableau; i++)
@@ -95,11 +96,11 @@ void afficherPieces(SDL_Texture** pieces, int ** echiquier, SDL_Renderer* render
         for (int j = 0; j < tailleTableau; j++)
         {
             // Calculer les coordonnées de la case
-            int x = i * largeurCase;
-            int y = j * hauteurCase;
+            x = i * largeurCase;
+            y = j * hauteurCase;
             
             // Dessiner la pièce sur la case si elle existe
-            int piece = echiquier[j][i];
+            int piece = echiquier[i][j];
             if (piece != 0)
             {
                 if(piece==11) // Pion blanc 

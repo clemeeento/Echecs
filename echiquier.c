@@ -1,6 +1,6 @@
 #include "echiquier.h"
 
-int ** initialisationPartie()
+int **initialisationPartie()
 {
     int **initial = (int**)malloc(tailleTableau*sizeof(int*));
     for (int i=0; i<tailleTableau; i=i+1)
@@ -19,46 +19,46 @@ int ** initialisationPartie()
 
     for(int i=0; i<tailleTableau;i=i+1) //Placement des pions et des cases vides
     {
-        initial[1][i] = 11; // Pions Blanc
-        initial[6][i] = 21; // Pions Noirs
+        initial[i][1] = 11; // Pions Blanc
+        initial[i][6] = 21; // Pions Noirs
 
         // Cases vides
-        initial[2][i] = 0;
-        initial[3][i] = 0;
-        initial[4][i] = 0;
-        initial[5][i] = 0;        
+        initial[i][2] = 0;
+        initial[i][3] = 0;
+        initial[i][4] = 0;
+        initial[i][5] = 0;        
     }
 
     // Fous Blancs
-    initial[0][2] = 12;
-    initial[0][5] = 12;
+    initial[2][0] = 12;
+    initial[5][0] = 12;
     // Fous Noirs
-    initial[7][2] = 22;
-    initial[7][5] = 22;
+    initial[2][7] = 22;
+    initial[5][7] = 22;
 
     // Cavaliers Blancs
-    initial[0][1] = 13;
-    initial[0][6] = 13;
+    initial[1][0] = 13;
+    initial[6][0] = 13;
     // Cavaliers Noirs
-    initial[7][1] = 23;
-    initial[7][6] = 23;
+    initial[1][7] = 23;
+    initial[6][7] = 23;
 
     // Tours Blanches
     initial[0][0] = 14;
-    initial[0][7] = 14;
+    initial[7][0] = 14;
     // Tours Noirs
-    initial[7][0] = 24;
+    initial[0][7] = 24;
     initial[7][7] = 24;
 
     // Dame Blanche
-    initial[0][4] = 15;
+    initial[4][0] = 15;
     // Dame Noir
-    initial[7][4] = 25;
+    initial[4][7] = 25;
 
     // Roi Blanc
-    initial[0][3] = 16;
+    initial[3][0] = 16;
     // Roi Noir
-    initial[7][3] = 26;
+    initial[3][7] = 26;
 
     return initial;
 }
