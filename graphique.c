@@ -2,6 +2,41 @@
 
 #include "graphique.h"
 
+void afficherEchiquier(SDL_Renderer* renderer)
+{
+    // Dimensions d'une case de l'échiquier
+    int largeurCase = LARGEUR_FENETRE / tailleTableau;
+    int hauteurCase = HAUTEUR_FENETRE / tailleTableau;
+    
+    // Couleurs des cases
+    SDL_Color couleurBlanc = {255, 255, 255, 255};
+    SDL_Color couleurGris = {159, 159, 159, 255};
+    
+    // Parcourir les cases de l'échiquier
+    for (int i = 0; i < tailleTableau; i++)
+    {
+        for (int j = 0; j < tailleTableau; j++)
+        {
+            // Calculer les coordonnées de la case
+            int x = j * largeurCase;
+            int y = i * hauteurCase;
+            
+            // Dessiner la case
+            SDL_Rect caseRect = {x, y, largeurCase, hauteurCase};
+            if ((i + j) % 2 == 0)
+            {
+                SDL_SetRenderDrawColor(renderer, couleurBlanc.r, couleurBlanc.g, couleurBlanc.b, couleurBlanc.a);
+            }
+            else
+            {
+                SDL_SetRenderDrawColor(renderer, couleurGris.r, couleurGris.g, couleurGris.b, couleurGris.a);
+            }
+            SDL_RenderFillRect(renderer, &caseRect);
+            
+        }
+    }
+}
+
 // Charge une texture à partir d'un fichier image
 // path: le chemin du fichier image
 // renderer: le renderer SDL sur lequel la texture sera rendue
@@ -24,7 +59,6 @@ SDL_Texture* chargerTexture(const char* chemin, SDL_Renderer* renderer)
     
     return texture;
 }
-
 
 SDL_Texture** chargerPieces(SDL_Renderer* renderer) 
 {
@@ -49,36 +83,20 @@ SDL_Texture** chargerPieces(SDL_Renderer* renderer)
     return pieces;
 }
 
-void afficherEchiquier(SDL_Texture** pieces, int ** echiquier, SDL_Renderer* renderer)
+void afficherPieces(SDL_Texture** pieces, int ** echiquier, SDL_Renderer* renderer)
 {
     // Dimensions d'une case de l'échiquier
-    int largeurCase = LARGEUR_FENETRE / 8;
-    int hauteurCase = HAUTEUR_FENETRE / 8;
-    
-    // Couleurs des cases
-    SDL_Color couleurBlanc = {255, 255, 255, 255};
-    SDL_Color couleurGris = {159, 159, 159, 255};
-    
+    int largeurCase = LARGEUR_FENETRE / tailleTableau;
+    int hauteurCase = HAUTEUR_FENETRE / tailleTableau;
+
     // Parcourir les cases de l'échiquier
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < tailleTableau; i++)
     {
-        for (int j = 0; j < 8; j++)
+        for (int j = 0; j < tailleTableau; j++)
         {
             // Calculer les coordonnées de la case
             int x = j * largeurCase;
             int y = i * hauteurCase;
-            
-            // Dessiner la case
-            SDL_Rect caseRect = {x, y, largeurCase, hauteurCase};
-            if ((i + j) % 2 == 0)
-            {
-                SDL_SetRenderDrawColor(renderer, couleurBlanc.r, couleurBlanc.g, couleurBlanc.b, couleurBlanc.a);
-            }
-            else
-            {
-                SDL_SetRenderDrawColor(renderer, couleurGris.r, couleurGris.g, couleurGris.b, couleurGris.a);
-            }
-            SDL_RenderFillRect(renderer, &caseRect);
             
             // Dessiner la pièce sur la case si elle existe
             int piece = echiquier[j][i];
@@ -161,77 +179,3 @@ void afficherEchiquier(SDL_Texture** pieces, int ** echiquier, SDL_Renderer* ren
     }
 }
 
-void test(int ** echiquier)
-{
-    // Initialiser SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-    {
-        printf("Erreur lors de l'initialisation de SDL: %s\n", SDL_GetError());
-        return;
-    }
-    
-    // Créer une fenêtre
-    SDL_Window* window = SDL_CreateWindow("Échecs", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LARGEUR_FENETRE, HAUTEUR_FENETRE, SDL_WINDOW_SHOWN);
-    if (window == NULL)
-    {
-        printf("Erreur lors de la création de la fenêtre: %s\n", SDL_GetError());
-        SDL_Quit();
-        return;
-    }
-    
-    // Créer un renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL)
-    {
-        printf("Erreur lors de la création du renderer: %s\n", SDL_GetError());
-        SDL_Quit();
-        return;
-    }
-    
-    // Charger les textures des pièces
-    SDL_Texture** pieces = chargerPieces(renderer);
-    if (pieces == NULL)
-    {
-        printf("Erreur lors du chargement des textures des pièces\n");
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return;
-    }
-    
-    
-    // Boucle principale
-    SDL_Event event;
-    int quit = 0;
-    while (!quit)
-    {
-        while (SDL_PollEvent(&event))
-        {
-            if (event.type == SDL_QUIT)
-            {
-                quit = 1;
-            }
-        }
-        
-        // Effacer le renderer
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        
-        // Afficher l'échiquier
-        afficherEchiquier(pieces, echiquier, renderer);
-        
-        // Mettre à jour l'affichage
-        SDL_RenderPresent(renderer);
-    }
-    
-    // Libérer les ressources
-    for (int i = 0; i < 12; i++)
-    {
-        SDL_DestroyTexture(pieces[i]);
-    }
-    free(pieces);
-    
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-}

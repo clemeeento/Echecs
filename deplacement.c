@@ -439,48 +439,62 @@ int positionValide(int ** tableau, int initialX, int initialY, int finalX, int f
     // Si la case d'arrivée est hors du tableau
     if(finalX < 0 || finalX >= tailleTableau || finalY < 0 || finalY >= tailleTableau)
     {
+        printf("Erreur : case d'arrivee hors du tableau\n");
+        return 0;
+    }
+    // Si la case de depart est la meme que la case d'arrivee
+    if(initialX == finalX && initialY == finalY)
+    {
+        printf("Erreur : case de depart identique a la case d'arrivee\n");
         return 0;
     }
 
     // Si la case de départ est vide
     if(tableau[initialX][initialY]%10 == 0)
     {
+        printf("Erreur : case de depart vide\n");
         return 0;
     }
     
     // Cas du pion
     if(tableau[initialX][initialY]%10 == 1)
     {
+        printf("Pion\n");
         return positionValidePion(tableau, initialX, initialY, finalX, finalY);
     }
 
     // Cas du fou
     if(tableau[initialX][initialY]%10 == 2)
     {
+        printf("Fou\n");
         return positionValideFou(tableau, initialX, initialY, finalX, finalY);
     }
 
     // Cas du cavalier
     if(tableau[initialX][initialY]%10 == 3)
     {
+        printf("Cavalier\n");
         return positionValideCavalier(tableau, initialX, initialY, finalX, finalY);
     }
 
     // Cas de la tour
     if(tableau[initialX][initialY]%10 == 4)
     {
+        printf("Tour\n");
         return positionValideTour(tableau, initialX, initialY, finalX, finalY);
     }
 
     // Cas de la dame
     if(tableau[initialX][initialY]%10 == 5)
     {
+        printf("Dame\n");
         return positionValideDame(tableau, initialX, initialY, finalX, finalY);
     }
 
     // Cas du roi
     if(tableau[initialX][initialY]%10 == 6)
     {
+        printf("Roi\n");
         return positionValideRoi(tableau, initialX, initialY, finalX, finalY);
     }
 
@@ -540,7 +554,6 @@ int estEchec(int ** tableau, int couleur, int posX, int posY)
 int deplacementValide(int ** tableau, int initialX, int initialY, int finalX, int finalY)
 {
     int ** temporaire;
-
     // Si le déplacement est valide
     if(positionValide(tableau, initialX, initialY, finalX, finalY))
     {
