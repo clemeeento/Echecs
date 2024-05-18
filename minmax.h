@@ -9,7 +9,7 @@
 #include "echiquier.h"
 #include "deplacement.h"
 
-#define PROFONDEUR 4
+#define PROFONDEUR 3
 #define COULEUR_IA 2
 
 void calculScore(item * noeud);

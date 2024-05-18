@@ -156,31 +156,27 @@ char ** remonterArbre(item * noeud)
 }
 
 char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
-{   
+{  
     int couleur;
    
     // Cas Terminal, on a fini de parcourir l'arbre
-    if(noeud->profondeur == 1 && noeud->suivant == NULL)
+    if(noeud->suivant == NULL  && noeud->profondeur == 1)
     {
-        printf("Cas terminal\n");
-        fflush(stdout);
-
-        if(meilleurCoup == NULL) // Si c'est le seul coup possible
+        // Si c'est le seul coup possible
+        if(meilleurCoup == NULL) 
         {
             meilleurCoup = copieTableau(noeud->tableau);
         }
 
+        // On libère la dernière branche de l'arbre
         while(noeud->precedent != NULL)
         {
-            printf("free fin\n");
-            fflush(stdout);
             noeud = noeud->precedent;
             libererItem(noeud->suivant);
         }
 
+        // On libère le dernier noeud
         libererItem(noeud);
-        printf("Fin de l'arbre\n");
-        fflush(stdout);
 
         return meilleurCoup;
     }
@@ -190,7 +186,7 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
         // On génère les coups suivants
         if(noeud->profondeur < PROFONDEUR && noeud->score > -20)
         {
-            //printf("Profondeur : %d\n", noeud->profondeur);
+            // Déterminer la couleur des coups à générer
             if(noeud->profondeur%2 == 0)
             {
                 couleur = COULEUR_IA;
@@ -200,21 +196,17 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                 couleur = 3 - COULEUR_IA;
             }
 
-            // printf("Generation des coups\n");
-            // fflush(stdout);
-
+            // On génère les coups à partir du noeud actuel
             liste * coups = generationCoups(noeud, couleur);
+
+            // On se place sur le premier coup généré
             noeud = coups->premier;
 
+            // On libère la liste des coups 
+            //Car plus utile une fois les coups générés (il faudrait trouver un autre moyen que les listes pour générer les coups)
             free(coups);
 
-            // printf("Coups générés\n");
-            // fflush(stdout);
-            if(noeud == NULL)
-            {
-                printf("Noeud Null\n");
-                fflush(stdout);
-            }
+            // On appelle la fonction minmax pour le premier coup généré
             minmax(noeud, meilleurCoup, meilleurScore);
         }
         else
@@ -225,8 +217,6 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                 // On compare les scores des noeuds
                 while(noeud->suivant != NULL)
                 {
-                    printf("Score : %d\n", noeud->score);
-                    fflush(stdout);
                     // Si le score du noeud est supérieur au meilleur score
                     if(noeud->score > meilleurScore)
                     {
@@ -235,55 +225,86 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                     }
 
                     noeud = noeud->suivant;
-                    libererItem(noeud->precedent); // On libère la mémoire du noeud précédent
+
+                    // On libère la mémoire du noeud précédent pour liberer la brancahe de l'arbre
+                    libererItem(noeud->precedent); 
                 }
 
-                // On remonte l'arbre
-                printf("Remontee de l'arbre\n");
-                fflush(stdout);
+                // On remonte l'arbre en liberant le "fils" du noeud actuel
+                // tmp car on a pas de lien avec le noeud "fils" une fois qu'on est au parent
+                item * temp = noeud;
                 noeud = noeud->parent;
+                libererItem(temp);
                 
+                // On remonte l'arbre tant que le suivant est null / tant qu'on est à la fin de la branche de l'arbre
+                // Si on est à la profondeur 1, on est remonter en haut de l'arbre, on arrête de remonter
                 while(noeud->suivant == NULL && noeud->profondeur != 1)
                 {
+                    // On libère la branche de l'arbre
+                    while(noeud->precedent == NULL)
+                    {
+                        libererItem(noeud->suivant);
+                    } 
+
+                    // On remonte l'arbre en liberant le "fils" du noeud actuel
+                    // tmp car on a pas de lien avec le noeud "fils" une fois qu'on est au parent
+                    item * temp = noeud;
                     noeud = noeud->parent;
+                    libererItem(temp);
                 }
                 
-                if(noeud->suivant != NULL) // On continue à parcourir l'arbre
+                // On continue à parcourir l'arbre
+                if(noeud->suivant != NULL) 
                 {
                     minmax(noeud->suivant, meilleurCoup, meilleurScore);
                 }
-                else // Si on est arrivé à la fin de l'arbre, on appelle la fonction minmax pour arriver dans le cas terminal
+                else // On a fini de parcourir l'arbre, on appelle la fonction minmax pour arriver dans le cas terminal
                 {
-                    printf("Appel de la fonction minmax profondeur\n");
-                    fflush(stdout);
                     minmax(noeud, meilleurCoup, meilleurScore);
                 }
             }
             else
             {
                 // Si on est à une profondeur inférieure à la profondeur maximale on est donc dans le cas ou le score est inférieur à -20
-                // On va donc remonter l'arbre
-                printf("score inférieur à -20\n");
-                fflush(stdout);
+
+                // Si on a pas fini de parcourir la branche de l'arbre
                 if(noeud->suivant != NULL)
                 {
                     minmax(noeud->suivant, meilleurCoup, meilleurScore);
                 }
-                else
+                else // Si on a fini de parcourir la branche de l'arbre
                 {
-                    if(noeud->profondeur != 1)
+                     // Si le score du noeud est supérieur au meilleur score
+                     // Dans le cas ou c'est le seul coup possible
+                    if(noeud->score > meilleurScore)
                     {
-                        noeud = noeud->parent;
+                        meilleurScore = noeud->score;
+                        meilleurCoup = remonterArbre(noeud);
                     }
 
-                    while(noeud->suivant == NULL && noeud->profondeur != 1)
+                    // Si on est à la profondeur 1, on est remonter en haut de l'arbre, on arrête de remonter
+                    if(noeud->profondeur != 1)
                     {
                         item * temp = noeud;
                         noeud = noeud->parent;
                         libererItem(temp);
                     }
+
+                    // On remonte l'arbre tant que le suivant est null / tant qu'on est à la fin de la branche de l'arbre
+                    // Si on est à la profondeur 1, on est remonter en haut de l'arbre, on arrête de remonter
+                    while(noeud->suivant == NULL && noeud->profondeur != 1)
+                    {
+                        while(noeud->precedent == NULL)
+                        {
+                            libererItem(noeud->suivant);
+                        } 
+                        item * temp = noeud;
+                        noeud = noeud->parent;
+                        libererItem(temp);
+                    }
                     
-                    if(noeud->suivant != NULL) // On continue à parcourir l'arbre
+                    // On continue à parcourir l'arbre
+                    if(noeud->suivant != NULL) 
                     {
                         noeud = noeud->suivant;
                         libererItem(noeud->precedent);

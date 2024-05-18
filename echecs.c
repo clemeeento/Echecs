@@ -93,7 +93,6 @@ int main()
                         {
                             deplacement(echiquier, initialX, initialY, finalX, finalY);
                             tour = 3 - tour;
-                            printf("\nTour: %d\n", tour);
                         }
                     }
                 }
@@ -108,14 +107,10 @@ int main()
             meilleurCoup = copieTableau(echiquier);
 
             echiquier = minmax(noeud, meilleurCoup, meuilleurScore);
-            printf("coup ordinateur\n");
-            fflush(stdout);
+
             tour = 3 - tour;
 
             libererItem(noeud);
-            
-            printf("\nTour: %d\n", tour);
-            fflush(stdout);
         }
 
         // Effacer le renderer
@@ -131,11 +126,20 @@ int main()
 
         if(estEchecMat(echiquier, tour))
         {
-            quit = 1;
             printf("Echec et mat\n");
             printf("Le joueur %d a perdu\n", tour);
+            
+            while (!quit) 
+            {
+                if (SDL_WaitEvent(&event)) 
+                {
+                    if (event.type == SDL_QUIT) 
+                    {
+                        quit = 1;
+                    }
+                }
+            }
         }
-    
     }
     
     // Libérer les ressources
