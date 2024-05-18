@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "item.h"
 #include "liste.h"
 #include "echiquier.h"
 #include "deplacement.h"
@@ -16,6 +15,8 @@ int main()
     int tour = 1;
     int x, y;
     int initialX, initialY, finalX, finalY;
+    int meuilleurScore;
+    char ** meilleurCoup;
 
     char ** echiquier = initialisationPartie();
 
@@ -103,16 +104,18 @@ int main()
             item * noeud = creerItem();
             noeud->tableau = copieTableau(echiquier);
 
-            int meuilleurScore = -1000;
-            item * meilleurCoup = NULL;
+            meuilleurScore = -1000;
+            meilleurCoup = copieTableau(echiquier);
 
-            echiquier = minmax(noeud, meilleurCoup, meuilleurScore, PROFONDEUR);
-
+            echiquier = minmax(noeud, meilleurCoup, meuilleurScore);
+            printf("coup ordinateur\n");
+            fflush(stdout);
             tour = 3 - tour;
 
-            libererItem(meilleurCoup);
             libererItem(noeud);
+            
             printf("\nTour: %d\n", tour);
+            fflush(stdout);
         }
 
         // Effacer le renderer

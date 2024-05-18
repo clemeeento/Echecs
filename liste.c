@@ -30,27 +30,24 @@ item * creerItem()
     return noeud;
 }
 
-void libererItem(item * noeud) 
+void libererTableau(char **tableau, int taille) 
 {
-    if ((noeud != NULL) && (noeud->tableau != NULL)) 
-    {
-        free(noeud->tableau);
-    }
-    free(noeud);
-}
-
-void remplireItem(item * noeud, char ** tableau, int taille) 
-{
-    noeud->taille = taille;
-    noeud->tableau = (char **)malloc(taille * sizeof(char *));
-
     for (int i = 0; i < taille; i=i+1) 
     {
-        noeud->tableau[i] = (char *)malloc(taille * sizeof(int));
-        for (int j = 0; j < taille; j=j+1) 
+        free(tableau[i]);
+    }
+    free(tableau);
+}
+
+void libererItem(item *noeud) 
+{
+    if (noeud) 
+    {
+        if (noeud->tableau) 
         {
-            noeud->tableau[i][j] = tableau[i][j];
+            libererTableau(noeud->tableau, noeud->taille);
         }
+        free(noeud);
     }
 }
 
@@ -85,32 +82,6 @@ int nombreElements(liste * l)
     return l->nombreElements;
 }
 
-item *dansListe(liste * l, char ** tableau, int taille) 
-{
-    int i;
-	int nbElements;
-	item *noeud;
-	if(l->nombreElements==0)
-	{
-		return NULL;
-	}
-	else
-	{
-		nbElements = nombreElements(l);
-		noeud = l->premier;
-		for(i=0;i<nbElements;i=i+1)
-		{
-			taille = noeud->taille;
-			if(comparaisonTableau(tableau, noeud->tableau, taille) == 1)
-			{
-				return noeud;
-			}
-			noeud=noeud->suivant;
-		}
-	}
-
-	return NULL;
-}
 
 void retirerItem(liste *l, item *noeud ) 
 {
@@ -213,22 +184,4 @@ void ajouterDernier(liste * l, item * noeud)
     l->nombreElements = l->nombreElements + 1;
 }
 
-void afficherListe(liste * l) 
-{
-    item * noeud = l->premier;
-
-    while (noeud != NULL) 
-    {
-        for(int i=0; i<noeud->taille; i=i+1)
-        {
-            for(int j=0; j<noeud->taille; j=j+1)
-            {
-                printf("%d ", noeud->tableau[j][i]);
-            }
-            printf("\n");
-        }
-        printf("\n");
-        noeud = noeud->suivant;
-    }
-}
 

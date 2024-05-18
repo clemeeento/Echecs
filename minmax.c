@@ -49,8 +49,14 @@ void calculScore(item * noeud)
                 {
                     score = score + 9;
                 }
+
+                if (i == 3 || i == 4 || j == 3 || j == 4) // Cases centrales
+                { 
+                    score = score + 0.5;
+                }
+
             }
-            else
+            if(noeud->tableau[i][j]/10 == 3 - COULEUR_IA)
             {
                 if(noeud->tableau[i][j]%10 == 1) // Pion
                 {
@@ -71,6 +77,11 @@ void calculScore(item * noeud)
                 else if(noeud->tableau[i][j]%10 == 5) // Dame
                 {
                     score = score - 9;
+                }
+
+                if (i == 3 || i == 4 || j == 3 || j == 4) // Cases centrales
+                { 
+                    score = score - 0.5;
                 }
             }
         }
@@ -118,8 +129,8 @@ liste * generationCoups(item * noeud, int couleur)
                             coup->tableau = copieTableau(noeud->tableau);
                             deplacement(coup->tableau, i, j, k, l);
                             coup->profondeur = noeud->profondeur + 1;
-                            coup->parent = noeud;
                             coup->taille = tailleTableau;
+                            coup->parent = noeud;
                             calculScore(coup);
                             ajouterDernier(coups, coup);
                         }
@@ -131,45 +142,53 @@ liste * generationCoups(item * noeud, int couleur)
     return coups;
 }
 
-item * remonterArbre(item * noeud)
+char ** remonterArbre(item * noeud)
 {
-    item * tmp = noeud;
-    while(tmp->profondeur != 1)
+    item * temp = noeud;
+    char ** tmpTableau;
+    while(temp->profondeur != 1)
     {
-        tmp = tmp->parent;
+        temp = temp->parent;
     }
-    return tmp;
+    tmpTableau = copieTableau(temp->tableau);
+
+    return tmpTableau;
 }
 
-char ** minmax(item * noeud, item * meilleurCoup, int meilleurScore, int profondeur)
+char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
 {   
     int couleur;
-
+   
     // Cas Terminal, on a fini de parcourir l'arbre
     if(noeud->profondeur == 1 && noeud->suivant == NULL)
     {
         printf("Cas terminal\n");
+        fflush(stdout);
 
         if(meilleurCoup == NULL) // Si c'est le seul coup possible
         {
-            meilleurCoup = noeud;
+            meilleurCoup = copieTableau(noeud->tableau);
         }
-
-        char ** tableau = copieTableau(meilleurCoup->tableau);
 
         while(noeud->precedent != NULL)
         {
+            printf("free fin\n");
+            fflush(stdout);
             noeud = noeud->precedent;
             libererItem(noeud->suivant);
         }
 
-        return tableau;
+        libererItem(noeud);
+        printf("Fin de l'arbre\n");
+        fflush(stdout);
+
+        return meilleurCoup;
     }
     else
     {
         // Si on est à une profondeur inférieure à la profondeur maximale ou si le score est supérieur à -20
         // On génère les coups suivants
-        if(noeud->profondeur < profondeur && noeud->score > -20)
+        if(noeud->profondeur < PROFONDEUR && noeud->score > -20)
         {
             //printf("Profondeur : %d\n", noeud->profondeur);
             if(noeud->profondeur%2 == 0)
@@ -181,19 +200,33 @@ char ** minmax(item * noeud, item * meilleurCoup, int meilleurScore, int profond
                 couleur = 3 - COULEUR_IA;
             }
 
+            // printf("Generation des coups\n");
+            // fflush(stdout);
+
             liste * coups = generationCoups(noeud, couleur);
             noeud = coups->premier;
-            printf("Coups generes, profondeur : %d\n", noeud->profondeur);
-            minmax(noeud, meilleurCoup, meilleurScore, profondeur);
+
+            free(coups);
+
+            // printf("Coups générés\n");
+            // fflush(stdout);
+            if(noeud == NULL)
+            {
+                printf("Noeud Null\n");
+                fflush(stdout);
+            }
+            minmax(noeud, meilleurCoup, meilleurScore);
         }
         else
         {
             // Si on est à la profondeur maximale
-            if(noeud->profondeur == profondeur)
+            if(noeud->profondeur == PROFONDEUR)
             {
                 // On compare les scores des noeuds
                 while(noeud->suivant != NULL)
                 {
+                    printf("Score : %d\n", noeud->score);
+                    fflush(stdout);
                     // Si le score du noeud est supérieur au meilleur score
                     if(noeud->score > meilleurScore)
                     {
@@ -206,56 +239,59 @@ char ** minmax(item * noeud, item * meilleurCoup, int meilleurScore, int profond
                 }
 
                 // On remonte l'arbre
-                    item * tmp = noeud;
-                    noeud = noeud->parent;
-                    libererItem(tmp);
-
+                printf("Remontee de l'arbre\n");
+                fflush(stdout);
+                noeud = noeud->parent;
+                
                 while(noeud->suivant == NULL && noeud->profondeur != 1)
                 {
-                    item * tmp = noeud;
                     noeud = noeud->parent;
-                    libererItem(tmp);
                 }
                 
                 if(noeud->suivant != NULL) // On continue à parcourir l'arbre
                 {
-                    minmax(noeud->suivant, meilleurCoup, meilleurScore, profondeur);
+                    minmax(noeud->suivant, meilleurCoup, meilleurScore);
                 }
                 else // Si on est arrivé à la fin de l'arbre, on appelle la fonction minmax pour arriver dans le cas terminal
                 {
-                    minmax(noeud, meilleurCoup, meilleurScore, profondeur);
+                    printf("Appel de la fonction minmax profondeur\n");
+                    fflush(stdout);
+                    minmax(noeud, meilleurCoup, meilleurScore);
                 }
             }
             else
             {
                 // Si on est à une profondeur inférieure à la profondeur maximale on est donc dans le cas ou le score est inférieur à -20
                 // On va donc remonter l'arbre
-                printf("Score est inferieur a -20\n");
+                printf("score inférieur à -20\n");
+                fflush(stdout);
                 if(noeud->suivant != NULL)
                 {
-                    minmax(noeud->suivant, meilleurCoup, meilleurScore, profondeur);
+                    minmax(noeud->suivant, meilleurCoup, meilleurScore);
                 }
                 else
                 {
                     if(noeud->profondeur != 1)
                     {
-                        item * tmp = noeud;
                         noeud = noeud->parent;
-                        libererItem(tmp);
                     }
 
                     while(noeud->suivant == NULL && noeud->profondeur != 1)
                     {
+                        item * temp = noeud;
                         noeud = noeud->parent;
+                        libererItem(temp);
                     }
                     
                     if(noeud->suivant != NULL) // On continue à parcourir l'arbre
                     {
-                        minmax(noeud->suivant, meilleurCoup, meilleurScore, profondeur);
+                        noeud = noeud->suivant;
+                        libererItem(noeud->precedent);
+                        minmax(noeud, meilleurCoup, meilleurScore);
                     }
                     else // Si on est arrivé à la fin de l'arbre, on appelle la fonction minmax pour arriver dans le cas terminal
                     {
-                        minmax(noeud, meilleurCoup, meilleurScore, profondeur);
+                        minmax(noeud, meilleurCoup, meilleurScore);
                     }
                 }
             }

@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "item.h"
 #include "liste.h"
 
 #define tailleTableau 8

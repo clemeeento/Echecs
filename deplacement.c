@@ -549,7 +549,7 @@ int deplacementValide(char ** tableau, int initialX, int initialY, int finalX, i
         // Si le roi est en échec une fois le déplacement effectué
         if(estEchec(temporaire, tableau[initialX][initialY]/10))
         {
-            free(temporaire);
+            libererTableau(temporaire, tailleTableau);
             return 0;
         }
 
