@@ -16,7 +16,7 @@ graphique.o: graphique.c graphique.h
 	gcc -c graphique.c
 
 echecs: echecs.c liste.c echiquier.c deplacement.c minmax.c graphique.c liste.h echiquier.h deplacement.h minmax.h graphique.h item.h 
-	gcc -o echecs echecs.c liste.c echiquier.c deplacement.c minmax.c graphique.c  -lSDL2 
+	gcc -g -o echecs echecs.c liste.c echiquier.c deplacement.c minmax.c graphique.c  -lSDL2 
 
 clean:	
 	rm -f echecs *.o

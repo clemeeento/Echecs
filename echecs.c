@@ -60,7 +60,7 @@ int main()
     SDL_Event event;
     while (!quit)
     {
-        if (tour==1) // Joueur
+        if (tour != COULEUR_IA) // Joueur
         {
            if (SDL_WaitEvent(&event))
             {
@@ -92,6 +92,7 @@ int main()
                         {
                             deplacement(echiquier, initialX, initialY, finalX, finalY);
                             tour = 3 - tour;
+                            printf("\nTour: %d\n", tour);
                         }
                     }
                 }
@@ -105,11 +106,13 @@ int main()
             int meuilleurScore = -1000;
             item * meilleurCoup = NULL;
 
-            echiquier = minmax(noeud, meilleurCoup, meuilleurScore, 2, PROFONDEUR);
+            echiquier = minmax(noeud, meilleurCoup, meuilleurScore, PROFONDEUR);
 
             tour = 3 - tour;
 
             libererItem(meilleurCoup);
+            libererItem(noeud);
+            printf("\nTour: %d\n", tour);
         }
 
         // Effacer le renderer
@@ -122,6 +125,14 @@ int main()
         
         // Mettre à jour l'affichage
         SDL_RenderPresent(renderer);
+
+        if(estEchecMat(echiquier, tour))
+        {
+            quit = 1;
+            printf("Echec et mat\n");
+            printf("Le joueur %d a perdu\n", tour);
+        }
+    
     }
     
     // Libérer les ressources
