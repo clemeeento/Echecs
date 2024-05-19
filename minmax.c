@@ -20,32 +20,32 @@ void afficherTableau(char **tableau)
     printf("\n");
 }
 
-void calculScore(item * noeud)
+int calculScore(char ** tableau, int scoreParent)
 {
     int score = 0;
     for(int i=0; i<tailleTableau; i=i+1)
     {
         for(int j=0; j<tailleTableau; j=j+1)
         {
-            if(noeud->tableau[i][j]/10 == COULEUR_IA)
+            if(tableau[i][j]/10 == COULEUR_IA)
             {
-                if(noeud->tableau[i][j]%10 == 1) // Pion
+                if(tableau[i][j]%10 == 1) // Pion
                 {
                     score = score + 1;
                 }
-                else if(noeud->tableau[i][j]%10 == 2) // Cavalier
+                else if(tableau[i][j]%10 == 2) // Cavalier
                 {
                     score = score + 3;
                 }
-                else if(noeud->tableau[i][j]%10 == 3) // Fou
+                else if(tableau[i][j]%10 == 3) // Fou
                 {
                     score = score + 3;
                 }
-                else if(noeud->tableau[i][j]%10 == 4) // Tour
+                else if(tableau[i][j]%10 == 4) // Tour
                 {
                     score = score + 5;
                 }
-                else if(noeud->tableau[i][j]%10 == 5) // Dame
+                else if(tableau[i][j]%10 == 5) // Dame
                 {
                     score = score + 9;
                 }
@@ -56,25 +56,25 @@ void calculScore(item * noeud)
                 }
 
             }
-            if(noeud->tableau[i][j]/10 == 3 - COULEUR_IA)
+            if(tableau[i][j]/10 == 3 - COULEUR_IA)
             {
-                if(noeud->tableau[i][j]%10 == 1) // Pion
+                if(tableau[i][j]%10 == 1) // Pion
                 {
                     score = score - 1;
                 }
-                else if(noeud->tableau[i][j]%10 == 2) // Cavalier
+                else if(tableau[i][j]%10 == 2) // Cavalier
                 {
                     score = score - 3;
                 }
-                else if(noeud->tableau[i][j]%10 == 3) // Fou
+                else if(tableau[i][j]%10 == 3) // Fou
                 {
                     score = score - 3;
                 }
-                else if(noeud->tableau[i][j]%10 == 4) // Tour
+                else if(tableau[i][j]%10 == 4) // Tour
                 {
                     score = score - 5;
                 }
-                else if(noeud->tableau[i][j]%10 == 5) // Dame
+                else if(tableau[i][j]%10 == 5) // Dame
                 {
                     score = score - 9;
                 }
@@ -86,23 +86,37 @@ void calculScore(item * noeud)
             }
         }
     }
-    if(estEchecMat(noeud->tableau, COULEUR_IA))
+    if(estEchecMat(tableau, COULEUR_IA))
     {
         score = score - 100;
     }
 
-    if(estEchecMat(noeud->tableau, 3 - COULEUR_IA))
+    if(estEchecMat(tableau, 3 - COULEUR_IA))
     {
         score = score + 100;
     }
 
-    noeud->score = noeud->score + score;
+    score = scoreParent + score;
+
+    return score;
 }
 
 liste * generationCoups(item * noeud, int couleur)
 {
     liste * coups = creerListe();
     item * coup = NULL;
+    char ** tableau = copieTableau(noeud->tableau);
+    int score;
+    int m = 0;
+
+    int meillieursScores[6]= {-1000,-1000,-1000,-1000,-1000,-1000};
+    char *** meillieursCoups = malloc(6*sizeof(char **));
+    meillieursCoups[0] = NULL;
+    meillieursCoups[1] = NULL;
+    meillieursCoups[2] = NULL;
+    meillieursCoups[3] = NULL;
+    meillieursCoups[4] = NULL;
+    meillieursCoups[5] = NULL;
 
     if(noeud == NULL)
     {
@@ -115,7 +129,7 @@ liste * generationCoups(item * noeud, int couleur)
         for(int j=0; j<tailleTableau; j=j+1) // j = colonne de la pièce
         {
             // Si la pièce est de la couleur du joueur
-            if(noeud->tableau[i][j]/10 == couleur)
+            if(tableau[i][j]/10 == couleur)
             {
                 // On parcourt le tableau pour trouver les cases où la pièce peut se déplacer
                 for(int k=0; k<tailleTableau; k=k+1) // k = ligne de la case
@@ -123,16 +137,56 @@ liste * generationCoups(item * noeud, int couleur)
                     for(int l=0; l<tailleTableau; l=l+1) // l = colonne de la case
                     {
                         // Si le déplacement est valide
-                        if(deplacementValide(noeud->tableau, i, j, k, l))
+                        if(deplacementValide(tableau, i, j, k, l))
                         {
-                            coup = creerItem();
-                            coup->tableau = copieTableau(noeud->tableau);
-                            deplacement(coup->tableau, i, j, k, l);
-                            coup->profondeur = noeud->profondeur + 1;
-                            coup->taille = tailleTableau;
-                            coup->parent = noeud;
-                            calculScore(coup);
-                            ajouterDernier(coups, coup);
+                            deplacement(tableau, i, j, k, l);
+                            score = calculScore(tableau, noeud->score);
+
+                            if(meillieursScores[0] < score)
+                            {
+                                meillieursCoups[0] = copieTableau(tableau);
+                                meillieursScores[0] = score;
+                            }
+                            else if(meillieursScores[1] < score || meillieursScores[0] == meillieursScores[1])
+                            {
+                                meillieursCoups[1] = copieTableau(tableau);
+                                meillieursScores[1] = score;
+                            }
+                            else if(meillieursScores[2] < score || meillieursScores[1] == meillieursScores[2])
+                            {
+                                meillieursCoups[2] = copieTableau(tableau);
+                                meillieursScores[2] = score;
+                            }
+                            else if(meillieursScores[3] < score || meillieursScores[2] == meillieursScores[3])
+                            {
+                                meillieursCoups[3] = copieTableau(tableau);
+                                meillieursScores[3] = score;
+                            }
+                            else if(meillieursScores[4] < score || meillieursScores[3] == meillieursScores[4])
+                            {
+                                meillieursCoups[4] = copieTableau(tableau);
+                                meillieursScores[4] = score;
+                            }
+                            else if(meillieursScores[5] < score || meillieursScores[4] == meillieursScores[5])
+                            {
+                                meillieursCoups[5] = copieTableau(tableau);
+                                meillieursScores[5] = score;
+                            }
+
+                            while(meillieursCoups[m] == NULL)
+                            {
+                                printf("m = %d\n", m);
+                                afficherTableau(meillieursCoups[m]);
+                                coup = creerItem();
+                                coup->tableau = copieTableau(meillieursCoups[m]);
+                                coup->profondeur = noeud->profondeur + 1;
+                                coup->score = meillieursScores[m];
+                                coup->taille = tailleTableau;
+                                coup->parent = noeud;
+                                ajouterDernier(coups, coup);
+                                m=m+1;
+                                printf("Ajouté coup\n");
+                            }
                         }
                     }
                 }
@@ -294,10 +348,14 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                     // Si on est à la profondeur 1, on est remonter en haut de l'arbre, on arrête de remonter
                     while(noeud->suivant == NULL && noeud->profondeur != 1)
                     {
+                        // On libère la branche de l'arbre
                         while(noeud->precedent == NULL)
                         {
                             libererItem(noeud->suivant);
                         } 
+
+                        // On remonte l'arbre en liberant le "fils" du noeud actuel
+                        // tmp car on a pas de lien avec le noeud "fils" une fois qu'on est au parent
                         item * temp = noeud;
                         noeud = noeud->parent;
                         libererItem(temp);
