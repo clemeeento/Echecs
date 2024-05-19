@@ -57,7 +57,12 @@ int calculScore(char ** tableau, int scoreParent)
                     score = score + 9;
                 }
 
-                if (i == 3 || i == 4 || j == 3 || j == 4) // Cases centrales
+                if ((i == 3 || i == 4) && (j == 3 || j == 4)) // Cases centrales
+                { 
+                    score = score + 1;
+                }
+
+                if ((i == 3 || i == 4) && (j == 2 || j == 5)) // Cases centrales
                 { 
                     score = score + 0.5;
                 }
@@ -86,7 +91,12 @@ int calculScore(char ** tableau, int scoreParent)
                     score = score - 9;
                 }
 
-                if (i == 3 || i == 4 || j == 3 || j == 4) // Cases centrales
+                if ((i == 3 || i == 4) && (j == 3 || j == 4)) // Cases centrales
+                { 
+                    score = score - 1;
+                }
+
+                if ((i == 3 || i == 4) && (j == 2 || j == 5)) // Cases centrales
                 { 
                     score = score - 0.5;
                 }
@@ -149,16 +159,6 @@ liste * generationCoups(item * noeud, int couleur)
             }
         }
     }
-    // if(couleur == COULEUR_IA)
-    // {
-    //     printf("\nCoups possibles pour l'IA : %d\n", nombreCoups);
-    //     printf("Profondeur : %d\n\n", noeud->profondeur + 1);
-    // }
-    // if(couleur == 3 - COULEUR_IA)
-    // {
-    //     printf("Coups possibles pour le joueur : %d\n", nombreCoups);
-    //     printf("Profondeur : %d\n", noeud->profondeur + 1);
-    // }
 
     qsort(coupsPossibles, nombreCoups, sizeof(coup), comparerCoup);
 
@@ -172,14 +172,6 @@ liste * generationCoups(item * noeud, int couleur)
         nouveauNoeud->parent = noeud;
         ajouterDernier(coups, nouveauNoeud);
     }
-
-    // if(coups->nombreElements == 1)
-    // {
-    //     printf("\nTableau du coup genere :\n");
-    //     afficherTableau(coups->premier->tableau);
-    //     printf("Profondeur : %d\n", coups->premier->profondeur);
-    //     printf("Score : %d\n\n", coups->premier->score);
-    // }
 
     for (int i = 0; i < nombreCoups; i=i+1)
     {
@@ -230,9 +222,9 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
     }
     else
     {
-        // Si on est à une profondeur inférieure à la profondeur maximale ou si le score est supérieur à -20
+        // Si on est à une profondeur inférieure à la profondeur maximale ou si le score est supérieur à -15
         // On génère les coups suivants
-        if(noeud->profondeur < PROFONDEUR && noeud->score > -20)
+        if(noeud->profondeur < PROFONDEUR && noeud->score > -15)
         {
             // Déterminer la couleur des coups à générer
             if(noeud->profondeur%2 == 0)
@@ -314,7 +306,7 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
             }
             else
             {
-                // Si on est à une profondeur inférieure à la profondeur maximale on est donc dans le cas ou le score est inférieur à -20
+                // Si on est à une profondeur inférieure à la profondeur maximale on est donc dans le cas ou le score est inférieur à -15
 
                 // Si on a pas fini de parcourir la branche de l'arbre
                 if(noeud->suivant != NULL)
