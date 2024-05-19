@@ -19,13 +19,13 @@ void afficherTableau(char **tableau)
     }
     printf("\n");
 }
+
 int comparerCoup(const void *a, const void *b) 
 {
     coup *coupA = (coup *)a;
     coup *coupB = (coup *)b;
     return coupB->score - coupA->score; // Tri décroissant par score
 }
-
 
 int calculScore(char ** tableau, int scoreParent)
 {
@@ -149,6 +149,16 @@ liste * generationCoups(item * noeud, int couleur)
             }
         }
     }
+    // if(couleur == COULEUR_IA)
+    // {
+    //     printf("\nCoups possibles pour l'IA : %d\n", nombreCoups);
+    //     printf("Profondeur : %d\n\n", noeud->profondeur + 1);
+    // }
+    // if(couleur == 3 - COULEUR_IA)
+    // {
+    //     printf("Coups possibles pour le joueur : %d\n", nombreCoups);
+    //     printf("Profondeur : %d\n", noeud->profondeur + 1);
+    // }
 
     qsort(coupsPossibles, nombreCoups, sizeof(coup), comparerCoup);
 
@@ -163,6 +173,14 @@ liste * generationCoups(item * noeud, int couleur)
         ajouterDernier(coups, nouveauNoeud);
     }
 
+    // if(coups->nombreElements == 1)
+    // {
+    //     printf("\nTableau du coup genere :\n");
+    //     afficherTableau(coups->premier->tableau);
+    //     printf("Profondeur : %d\n", coups->premier->profondeur);
+    //     printf("Score : %d\n\n", coups->premier->score);
+    // }
+
     for (int i = 0; i < nombreCoups; i=i+1)
     {
         if (coupsPossibles[i].tableau != NULL) {
@@ -171,11 +189,6 @@ liste * generationCoups(item * noeud, int couleur)
     }
 
     free(coupsPossibles);
-
-    if(coups->nombreElements == 1)
-    {
-        printf("1  coups possibles\n");
-    }
 
     return coups;
 }
@@ -212,9 +225,6 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
             noeud = noeud->precedent;
             libererItem(noeud->suivant);
         }
-
-        // On libère le dernier noeud
-        //libererItem(noeud);
 
         return meilleurCoup;
     }
@@ -279,11 +289,12 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                 while(noeud->suivant == NULL && noeud->profondeur != 1)
                 {
                     // On libère la branche de l'arbre
-                    while(noeud->precedent == NULL)
+                    while(noeud->precedent != NULL)
                     {
+                        noeud = noeud->precedent;
                         libererItem(noeud->suivant);
                     } 
-
+    
                     // On remonte l'arbre en liberant le "fils" du noeud actuel
                     // tmp car on a pas de lien avec le noeud "fils" une fois qu'on est au parent
                     item * temp = noeud;
@@ -333,10 +344,11 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                     while(noeud->suivant == NULL && noeud->profondeur != 1)
                     {
                         // On libère la branche de l'arbre
-                        while(noeud->precedent == NULL)
+                        while(noeud->precedent != NULL)
                         {
+                            noeud = noeud->precedent;
                             libererItem(noeud->suivant);
-                        } 
+                        }
 
                         // On remonte l'arbre en liberant le "fils" du noeud actuel
                         // tmp car on a pas de lien avec le noeud "fils" une fois qu'on est au parent

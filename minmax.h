@@ -9,7 +9,7 @@
 #include "echiquier.h"
 #include "deplacement.h"
 
-#define PROFONDEUR 4
+#define PROFONDEUR 5
 #define COULEUR_IA 2
 
 typedef struct 
@@ -18,11 +18,12 @@ typedef struct
     int score;
 } coup;
 
-
+int comparerCoup(const void *a, const void *b);
 int calculScore(char ** tableau, int scoreParent);
 liste * generationCoups(item * noeud, int couleur);
 char ** remonterArbre(item * noeud);
 char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore);
 
 void afficherTableau(char **tableau);
+
 #endif

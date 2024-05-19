@@ -32,7 +32,7 @@ item * creerItem()
 
 void libererTableau(char **tableau, int taille) 
 {
-    for (int i = 0; i < taille; i=i+1) 
+    for(int i = 0; i < taille; i=i+1) 
     {
         free(tableau[i]);
     }
@@ -41,9 +41,9 @@ void libererTableau(char **tableau, int taille)
 
 void libererItem(item *noeud) 
 {
-    if (noeud) 
+    if(noeud) 
     {
-        if (noeud->tableau) 
+        if(noeud->tableau) 
         {
             libererTableau(noeud->tableau, noeud->taille);
         }
