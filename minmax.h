@@ -9,8 +9,14 @@
 #include "echiquier.h"
 #include "deplacement.h"
 
-#define PROFONDEUR 3
+#define PROFONDEUR 4
 #define COULEUR_IA 2
+
+typedef struct 
+{
+    char **tableau;
+    int score;
+} coup;
 
 
 int calculScore(char ** tableau, int scoreParent);

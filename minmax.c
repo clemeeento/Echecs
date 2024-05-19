@@ -19,6 +19,13 @@ void afficherTableau(char **tableau)
     }
     printf("\n");
 }
+int comparerCoup(const void *a, const void *b) 
+{
+    coup *coupA = (coup *)a;
+    coup *coupB = (coup *)b;
+    return coupB->score - coupA->score; // Tri décroissant par score
+}
+
 
 int calculScore(char ** tableau, int scoreParent)
 {
@@ -104,18 +111,11 @@ int calculScore(char ** tableau, int scoreParent)
 liste * generationCoups(item * noeud, int couleur)
 {
     liste * coups = creerListe();
-    item * coup = NULL;
-    char ** tableau = copieTableau(noeud->tableau);
-    int score;
-    int m = 0;
+    item * nouveauNoeud = NULL;
 
-    int meillieursScores[6]= {-1000,-1000,-1000,-1000,-1000,-1000};
-    char *** meillieursCoups = malloc(6*sizeof(char **));
+    int nombreCoups = 0;
 
-    for(int i=0; i<6; i=i+1)
-    {
-        meillieursCoups[i] = NULL;
-    }
+    coup * coupsPossibles = NULL;
     
     if(noeud == NULL)
     {
@@ -128,7 +128,7 @@ liste * generationCoups(item * noeud, int couleur)
         for(int j=0; j<tailleTableau; j=j+1) // j = colonne de la pièce
         {
             // Si la pièce est de la couleur du joueur
-            if(tableau[i][j]/10 == couleur)
+            if(noeud->tableau[i][j]/10 == couleur)
             {
                 // On parcourt le tableau pour trouver les cases où la pièce peut se déplacer
                 for(int k=0; k<tailleTableau; k=k+1) // k = ligne de la case
@@ -136,43 +136,13 @@ liste * generationCoups(item * noeud, int couleur)
                     for(int l=0; l<tailleTableau; l=l+1) // l = colonne de la case
                     {
                         // Si le déplacement est valide
-                        if(deplacementValide(tableau, i, j, k, l))
+                        if(deplacementValide(noeud->tableau, i, j, k, l))
                         {
-                            deplacement(tableau, i, j, k, l);
-                            score = calculScore(tableau, noeud->score);
-
-                            if(meillieursScores[0] < score)
-                            {
-                                meillieursCoups[0] = copieTableau(tableau);
-                                meillieursScores[0] = score;
-                            }
-                            else if(meillieursScores[1] < score || meillieursScores[0] == meillieursScores[1])
-                            {
-                                meillieursCoups[1] = copieTableau(tableau);
-                                meillieursScores[1] = score;
-                            }
-                            else if(meillieursScores[2] < score || meillieursScores[1] == meillieursScores[2])
-                            {
-                                meillieursCoups[2] = copieTableau(tableau);
-                                meillieursScores[2] = score;
-                            }
-                            else if(meillieursScores[3] < score || meillieursScores[2] == meillieursScores[3])
-                            {
-                                meillieursCoups[3] = copieTableau(tableau);
-                                meillieursScores[3] = score;
-                            }
-                            else if(meillieursScores[4] < score || meillieursScores[3] == meillieursScores[4])
-                            {
-                                meillieursCoups[4] = copieTableau(tableau);
-                                meillieursScores[4] = score;
-                            }
-                            else if(meillieursScores[5] < score || meillieursScores[4] == meillieursScores[5])
-                            {
-                                meillieursCoups[5] = copieTableau(tableau);
-                                meillieursScores[5] = score;
-                            }
-
-                            tableau = copieTableau(noeud->tableau);
+                            nombreCoups = nombreCoups + 1;
+                            coupsPossibles = realloc(coupsPossibles, nombreCoups * sizeof(coup));
+                            coupsPossibles[nombreCoups - 1].tableau = copieTableau(noeud->tableau);
+                            deplacement(coupsPossibles[nombreCoups - 1].tableau, i, j, k, l);
+                            coupsPossibles[nombreCoups - 1].score = calculScore(coupsPossibles[nombreCoups - 1].tableau, noeud->score);
                         }
                     }
                 }
@@ -180,20 +150,31 @@ liste * generationCoups(item * noeud, int couleur)
         }
     }
 
-    while(meillieursCoups[m] != NULL)
+    qsort(coupsPossibles, nombreCoups, sizeof(coup), comparerCoup);
+
+    for(int i=0; i<6 && i < nombreCoups; i=i+1)
     {
-        printf("m = %d\n", m);
-        afficherTableau(meillieursCoups[m]);
-        coup = creerItem();
-        coup->tableau = copieTableau(meillieursCoups[m]);
-        coup->profondeur = noeud->profondeur + 1;
-        coup->score = meillieursScores[m];
-        coup->taille = tailleTableau;
-        coup->parent = noeud;
-        ajouterDernier(coups, coup);
-        m=m+1;
-        printf("Ajouté coup\n");
-        fflush(stdout);
+        nouveauNoeud = creerItem();
+        nouveauNoeud->tableau = copieTableau(coupsPossibles[i].tableau);
+        nouveauNoeud->score = coupsPossibles[i].score;
+        nouveauNoeud->profondeur = noeud->profondeur + 1;
+        nouveauNoeud->taille = tailleTableau;
+        nouveauNoeud->parent = noeud;
+        ajouterDernier(coups, nouveauNoeud);
+    }
+
+    for (int i = 0; i < nombreCoups; i=i+1)
+    {
+        if (coupsPossibles[i].tableau != NULL) {
+            libererTableau(coupsPossibles[i].tableau, tailleTableau);
+        }
+    }
+
+    free(coupsPossibles);
+
+    if(coups->nombreElements == 1)
+    {
+        printf("1  coups possibles\n");
     }
 
     return coups;
