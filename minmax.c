@@ -111,13 +111,12 @@ liste * generationCoups(item * noeud, int couleur)
 
     int meillieursScores[6]= {-1000,-1000,-1000,-1000,-1000,-1000};
     char *** meillieursCoups = malloc(6*sizeof(char **));
-    meillieursCoups[0] = NULL;
-    meillieursCoups[1] = NULL;
-    meillieursCoups[2] = NULL;
-    meillieursCoups[3] = NULL;
-    meillieursCoups[4] = NULL;
-    meillieursCoups[5] = NULL;
 
+    for(int i=0; i<6; i=i+1)
+    {
+        meillieursCoups[i] = NULL;
+    }
+    
     if(noeud == NULL)
     {
         printf("Noeud Null lors de la géneration\n");
@@ -173,26 +172,30 @@ liste * generationCoups(item * noeud, int couleur)
                                 meillieursScores[5] = score;
                             }
 
-                            while(meillieursCoups[m] == NULL)
-                            {
-                                printf("m = %d\n", m);
-                                afficherTableau(meillieursCoups[m]);
-                                coup = creerItem();
-                                coup->tableau = copieTableau(meillieursCoups[m]);
-                                coup->profondeur = noeud->profondeur + 1;
-                                coup->score = meillieursScores[m];
-                                coup->taille = tailleTableau;
-                                coup->parent = noeud;
-                                ajouterDernier(coups, coup);
-                                m=m+1;
-                                printf("Ajouté coup\n");
-                            }
+                            tableau = copieTableau(noeud->tableau);
                         }
                     }
                 }
             }
         }
     }
+
+    while(meillieursCoups[m] != NULL)
+    {
+        printf("m = %d\n", m);
+        afficherTableau(meillieursCoups[m]);
+        coup = creerItem();
+        coup->tableau = copieTableau(meillieursCoups[m]);
+        coup->profondeur = noeud->profondeur + 1;
+        coup->score = meillieursScores[m];
+        coup->taille = tailleTableau;
+        coup->parent = noeud;
+        ajouterDernier(coups, coup);
+        m=m+1;
+        printf("Ajouté coup\n");
+        fflush(stdout);
+    }
+
     return coups;
 }
 
@@ -230,7 +233,7 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
         }
 
         // On libère le dernier noeud
-        libererItem(noeud);
+        //libererItem(noeud);
 
         return meilleurCoup;
     }
