@@ -7,19 +7,19 @@
 #include <assert.h>
 #include "echiquier.h"
 
-int positionValidePion(int ** tableau, int initialX, int initialY, int finalX, int finalY);
-int positionValideFou(int ** tableau, int initialX, int initialY, int finalX, int finalY);
-int positionValideCavalier(int ** tableau, int initialX, int initialY, int finalX, int finalY);
-int positionValideTour(int ** tableau, int initialX, int initialY, int finalX, int finalY);
-int positionValideDame(int ** tableau, int initialX, int initialY, int finalX, int finalY);
-int positionValideRoi(int ** tableau, int initialX, int initialY, int finalX, int finalY);
-int positionValide(int ** tableau, int initialX, int initialY, int finalX, int finalY);
+int positionValidePion(char ** tableau, int initialX, int initialY, int finalX, int finalY);
+int positionValideFou(char ** tableau, int initialX, int initialY, int finalX, int finalY);
+int positionValideCavalier(char ** tableau, int initialX, int initialY, int finalX, int finalY);
+int positionValideTour(char ** tableau, int initialX, int initialY, int finalX, int finalY);
+int positionValideDame(char ** tableau, int initialX, int initialY, int finalX, int finalY);
+int positionValideRoi(char ** tableau, int initialX, int initialY, int finalX, int finalY);
+int positionValide(char ** tableau, int initialX, int initialY, int finalX, int finalY);
 
-int estEchec(int ** tableau, int couleur, int posX, int posY);
-int deplacementValide(int ** tableau, int initialX, int initialY, int finalX, int finalY);
+int estEchec(char ** tableau, int couleur);
+int deplacementValide(char ** tableau, int initialX, int initialY, int finalX, int finalY);
 
-int estEchecMat(int ** tableau, int couleur);
+int estEchecMat(char ** tableau, int couleur);
 
-void deplacement(int **tableau, int initialX, int initialY, int finalX, int finalY);
+void deplacement(char **tableau, int initialX, int initialY, int finalX, int finalY);
 
 #endif

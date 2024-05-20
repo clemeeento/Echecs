@@ -1,6 +1,6 @@
 #include "liste.h"
 
-int comparaisonTableau(int ** tableau1, int ** tableau2, int taille)
+int comparaisonTableau(char ** tableau1, char ** tableau2, int taille)
 {
 	for(int i = 0;i<taille;i=i+1)
 	{
@@ -30,27 +30,38 @@ item * creerItem()
     return noeud;
 }
 
-void libererItem(item * noeud) 
+void libererTableau(char **tableau, int taille) 
 {
-    if ((noeud != NULL) && (noeud->tableau != NULL)) 
+    for(int i = 0; i < taille; i=i+1) 
     {
-        free(noeud->tableau);
+        if(tableau[i] != NULL) 
+        {
+            free(tableau[i]);
+        }
     }
-    free(noeud);
+    free(tableau);
 }
 
-void remplireItem(item * noeud, int ** tableau, int taille) 
+void libererItem(item *noeud) 
 {
-    noeud->taille = taille;
-    noeud->tableau = (int **)malloc(taille * sizeof(int *));
 
-    for (int i = 0; i < taille; i=i+1) 
+    if(noeud != NULL) 
     {
-        noeud->tableau[i] = (int *)malloc(taille * sizeof(int));
-        for (int j = 0; j < taille; j=j+1) 
+        if(noeud->tableau != NULL) 
         {
-            noeud->tableau[i][j] = tableau[i][j];
+            libererTableau(noeud->tableau, noeud->taille);
         }
+        else
+        {
+            printf("Erreur : tableau NULL lors de la liberation\n");
+            fflush(stdout);
+        }
+        free(noeud);
+    }
+    else
+    {
+        printf("Erreur : noeud NULL lors de la liberation\n");
+        fflush(stdout);
     }
 }
 
@@ -85,32 +96,6 @@ int nombreElements(liste * l)
     return l->nombreElements;
 }
 
-item *dansListe(liste * l, int ** tableau, int taille) 
-{
-    int i;
-	int nbElements;
-	item *noeud;
-	if(l->nombreElements==0)
-	{
-		return NULL;
-	}
-	else
-	{
-		nbElements = nombreElements(l);
-		noeud = l->premier;
-		for(i=0;i<nbElements;i=i+1)
-		{
-			taille = noeud->taille;
-			if(comparaisonTableau(tableau, noeud->tableau, taille) == 1)
-			{
-				return noeud;
-			}
-			noeud=noeud->suivant;
-		}
-	}
-
-	return NULL;
-}
 
 void retirerItem(liste *l, item *noeud ) 
 {
@@ -211,24 +196,4 @@ void ajouterDernier(liste * l, item * noeud)
     }
 
     l->nombreElements = l->nombreElements + 1;
-}
-
-void afficherListe(liste * l) 
-{
-    item * noeud = l->premier;
-    int i;
-
-    while (noeud != NULL) 
-    {
-        for(int i=0; i<noeud->taille; i=i+1)
-        {
-            for(int j=0; j<noeud->taille; j=j+1)
-            {
-                printf("%d ", noeud->tableau[j][i]);
-            }
-            printf("\n");
-        }
-        printf("\n");
-        noeud = noeud->suivant;
-    }
 }

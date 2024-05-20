@@ -1,53 +1,154 @@
 #include "minmax.h"
-#include <limits.h> 
 
-int max(int a, int b) {
-    if(a>b)
-    return a;
-    else{
-        return b;
-
+void afficherTableau(char **tableau)
+{
+    for(int i = 0; i < tailleTableau; i++)
+    {
+        for(int j = 0; j < tailleTableau; j++)
+        {
+            if(tableau[j][i] == 0)
+            {
+                printf("00 ");
+            }
+            else
+            {
+                printf("%d ", tableau[j][i]);
+            }
+        }
+        printf("\n");
     }
+    printf("\n");
 }
-int min(int a, int b) {
-    if(a<b){
-        return a;
-    }
-    else{
-        return b;
-    }
+
+int comparerCoup(const void *a, const void *b) 
+{
+    coup *coupA = (coup *)a;
+    coup *coupB = (coup *)b;
+    return coupB->score - coupA->score; // Tri décroissant par score
 }
 
-int calculScore(item * noeud, int couleur)
+char ** remonterArbre(item * noeud)
+{
+    item * temp = noeud;
+    char ** tmpTableau;
+    while(temp->profondeur != 1)
+    {
+        temp = temp->parent;
+    }
+    tmpTableau = copieTableau(temp->tableau);
+
+    return tmpTableau;
+}
+
+int calculScore(char ** tableau, int scoreParent)
 {
     int score = 0;
     for(int i=0; i<tailleTableau; i=i+1)
     {
         for(int j=0; j<tailleTableau; j=j+1)
         {
-            if(noeud->tableau[i][j]/10 == couleur)
+            if(tableau[i][j]/10 == COULEUR_IA)
             {
-                score = score + noeud->tableau[i][j]%10;
+                if(tableau[i][j]%10 == 1) // Pion
+                {
+                    score = score + 1;
+                }
+                else if(tableau[i][j]%10 == 2) // Cavalier
+                {
+                    score = score + 3;
+                }
+                else if(tableau[i][j]%10 == 3) // Fou
+                {
+                    score = score + 3;
+                }
+                else if(tableau[i][j]%10 == 4) // Tour
+                {
+                    score = score + 5;
+                }
+                else if(tableau[i][j]%10 == 5) // Dame
+                {
+                    score = score + 9;
+                }
+
+                if ((i == 3 || i == 4) && (j == 3 || j == 4)) // Cases centrales
+                { 
+                    score = score + 1;
+                }
+
+                if ((i == 3 || i == 4) && (j == 2 || j == 5)) // Cases centrales
+                { 
+                    score = score + 0.5;
+                }
+
             }
-            else
+            if(tableau[i][j]/10 == 3 - COULEUR_IA)
             {
-                score = score - noeud->tableau[i][j]%10;
+                if(tableau[i][j]%10 == 1) // Pion
+                {
+                    score = score - 1;
+                }
+                else if(tableau[i][j]%10 == 2) // Cavalier
+                {
+                    score = score - 3;
+                }
+                else if(tableau[i][j]%10 == 3) // Fou
+                {
+                    score = score - 3;
+                }
+                else if(tableau[i][j]%10 == 4) // Tour
+                {
+                    score = score - 5;
+                }
+                else if(tableau[i][j]%10 == 5) // Dame
+                {
+                    score = score - 9;
+                }
+
+                if ((i == 3 || i == 4) && (j == 3 || j == 4)) // Cases centrales
+                { 
+                    score = score - 1;
+                }
+
+                if ((i == 3 || i == 4) && (j == 2 || j == 5)) // Cases centrales
+                { 
+                    score = score - 0.5;
+                }
             }
         }
     }
-    if(estEchecMat(noeud->tableau, couleur))
-    {
-        score = score - 20;
-    }
-    noeud->score = noeud->score + score;
-    return noeud->score; 
 
+    if(estEchec(tableau, COULEUR_IA))
+    {
+        score = score - 4;
+    }
+    if (estEchec(tableau, 3 - COULEUR_IA))
+    {
+        score = score + 4;
+    }
+    
+    if(estEchecMat(tableau, COULEUR_IA))
+    {
+        score = score - 100;
+    }
+    if(estEchecMat(tableau, 3 - COULEUR_IA))
+    {
+        score = score + 100;
+    }
+
+    score = scoreParent + score;
+
+    return score;
 }
 
 liste * generationCoups(item * noeud, int couleur)
 {
     liste * coups = creerListe();
-    item * coup = NULL;
+    item * nouveauNoeud = NULL;
+
+    int nombreCoups = 0;
+
+    coup * coupsPossibles = NULL;
+    
 
     // On parcourt le tableau pour trouver les pièces de la couleur du joueur
     for(int i=0; i<tailleTableau; i=i+1) // i = ligne de la pièce
@@ -65,112 +166,222 @@ liste * generationCoups(item * noeud, int couleur)
                         // Si le déplacement est valide
                         if(deplacementValide(noeud->tableau, i, j, k, l))
                         {
-                            coup = creerItem();
-                            coup->tableau = copieTableau(noeud->tableau);
-                            deplacement(coup->tableau, i, j, k, l);
-                            coup->profondeur = noeud->profondeur + 1;
-                            coup->parent = noeud;
-                            coup->taille = tailleTableau;
-                            calculScore(coup, couleur);
-                            ajouterDernier(coups, coup);
+                            // On incrémente le nombre de coups possibles
+                            nombreCoups = nombreCoups + 1;
+                            // On réalloue la mémoire pour le tableau des coups possibles
+                            coupsPossibles = realloc(coupsPossibles, nombreCoups * sizeof(coup));
+                            // On copie le tableau actuel
+                            coupsPossibles[nombreCoups - 1].tableau = copieTableau(noeud->tableau);
+                            // On effectue le déplacement
+                            deplacement(coupsPossibles[nombreCoups - 1].tableau, i, j, k, l);
+                            // On calcule le score du coup effectué
+                            coupsPossibles[nombreCoups - 1].score = calculScore(coupsPossibles[nombreCoups - 1].tableau, noeud->score);
                         }
                     }
                 }
             }
         }
     }
+
+    // On trie les coups possibles par score
+    qsort(coupsPossibles, nombreCoups, sizeof(coup), comparerCoup);
+
+    // On garde les 6 meilleurs coups
+    for(int i=0; i<6 && i < nombreCoups; i=i+1)
+    {   
+        // On initialise un nouvel item
+        nouveauNoeud = creerItem();
+        // On copie le tableau du coup possible
+        nouveauNoeud->tableau = copieTableau(coupsPossibles[i].tableau);
+        // On copie le score du coup possible
+        nouveauNoeud->score = coupsPossibles[i].score;
+        // On incrémente la profondeur du nouvel item
+        nouveauNoeud->profondeur = noeud->profondeur + 1;
+        // On lui attribue la taille du tableau
+        nouveauNoeud->taille = tailleTableau;
+        // On le lie à son parent
+        nouveauNoeud->parent = noeud;
+        // On ajoute le nouvel item à la liste des coups
+        ajouterDernier(coups, nouveauNoeud);
+    }
+
+    // On libère la mémoire des coups possibles
+    for (int i = 0; i < nombreCoups; i=i+1)
+    {
+        if (coupsPossibles[i].tableau != NULL) 
+        {
+            libererTableau(coupsPossibles[i].tableau, tailleTableau);
+        }
+    }
+    free(coupsPossibles);
+
     return coups;
 }
 
+char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
+{  
+    int couleur;
 
+    // Cas Terminal, on a fini de parcourir l'arbre
+    if(noeud->suivant == NULL  && noeud->profondeur == 1)
+    {
+        // Si c'est le seul coup possible
+        if(meilleurCoup == NULL) 
+        {
+            meilleurCoup = copieTableau(noeud->tableau);
+        }
 
-void generationCoupsRec(item *noeud, liste *coups, int couleur, int profondeur) {
-    if (profondeur == 4 || estEchecMat(noeud->tableau, couleur)) {
-        return;
+        // On libère la dernière branche de l'arbre
+        while(noeud->precedent != NULL)
+        {
+            noeud = noeud->precedent;
+            libererItem(noeud->suivant);
+        }
+
+        return meilleurCoup;
     }
+    else
+    {
+        // Si on est à une profondeur inférieure à la profondeur maximale ou si le score est supérieur à -15
+        // On génère les coups suivants
+        if(noeud->profondeur < PROFONDEUR && noeud->score > -15 && !estEchecMat(noeud->tableau, 3 - COULEUR_IA))
+        {
+            // Déterminer la couleur des coups à générer
+            if(noeud->profondeur%2 == 0)
+            {
+                couleur = COULEUR_IA;
+            }
+            else
+            {
+                couleur = 3 - COULEUR_IA;
+            }
 
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < tailleTableau; j++) {
-            if (noeud->tableau[i][j] / 10 == couleur) {
-                for (int k = 0; k < tailleTableau; k++) {
-                    for (int l = 0; l < tailleTableau; l++) {
-                        if (deplacementValide(noeud->tableau, i, j, k, l)) {
-                            item *coup = creerItem();
-                            coup->tableau = copieTableau(noeud->tableau);
-                            deplacement(coup->tableau, i, j, k, l);
-                            coup->profondeur = noeud->profondeur + 1;
-                            coup->parent = noeud;
-                            calculScore(coup, couleur);
-                            ajouterDernier(coups, coup);
+            // On génère les coups à partir du noeud actuel
+            liste * coups = generationCoups(noeud, couleur);
 
-                            // Appel récursif
-                            generationCoupsRec(coup, coups, couleur, profondeur + 1);
+            // On se place sur le premier coup généré
+            noeud = coups->premier;
+
+            // On libère la liste des coups 
+            // Car plus utile une fois les coups générés (il faudrait trouver un autre moyen que les listes pour générer les coups)
+            free(coups);
+
+            // On appelle la fonction minmax pour le premier coup généré
+            minmax(noeud, meilleurCoup, meilleurScore);
+        }
+        else
+        {
+            // Si on est à la profondeur maximale
+            if(noeud->profondeur == PROFONDEUR)
+            {
+                // On compare les scores des noeuds
+                while(noeud->suivant != NULL)
+                {
+                    // Si le score du noeud est supérieur au meilleur score
+                    if(noeud->score > meilleurScore)
+                    {
+                        meilleurScore = noeud->score;
+                        meilleurCoup = remonterArbre(noeud);
+                    }
+
+                    noeud = noeud->suivant;
+
+                    // On libère la mémoire du noeud précédent pour liberer la brancahe de l'arbre
+                    libererItem(noeud->precedent); 
+                }
+
+                // On remonte l'arbre en liberant le "fils" du noeud actuel
+                // tmp car on a pas de lien avec le noeud "fils" une fois qu'on est au parent
+                item * temp = noeud;
+                noeud = noeud->parent;
+                libererItem(temp);
+
+                // On remonte l'arbre tant que le suivant est null / tant qu'on est à la fin de la branche de l'arbre
+                // Si on est à la profondeur 1, on est remonter en haut de l'arbre, on arrête de remonter
+                while(noeud->suivant == NULL && noeud->profondeur != 1)
+                {
+                    // On libère la branche de l'arbre
+                    while(noeud->precedent != NULL)
+                    {
+                        noeud = noeud->precedent;
+                        libererItem(noeud->suivant);
+                    } 
+
+                    // On remonte l'arbre en liberant le "fils" du noeud actuel
+                    // tmp car on a pas de lien avec le noeud "fils" une fois qu'on est au parent
+                    item * temp = noeud;
+                    noeud = noeud->parent;
+                    libererItem(temp);
+                }
+
+                // On continue à parcourir l'arbre
+                if(noeud->suivant != NULL) 
+                {
+                    minmax(noeud->suivant, meilleurCoup, meilleurScore);
+                }
+                else // On a fini de parcourir l'arbre, on appelle la fonction minmax pour arriver dans le cas terminal
+                {
+                    minmax(noeud, meilleurCoup, meilleurScore);
+                }
+            }
+
+            else
+            {
+                // Si on est à une profondeur inférieure à la profondeur maximale on est donc dans le cas ou le score est inférieur à -15
+                
+                // Si on a pas fini de parcourir la branche de l'arbre
+                if(noeud->suivant != NULL)
+                {
+                    minmax(noeud->suivant, meilleurCoup, meilleurScore);
+                }
+                else // Si on a fini de parcourir la branche de l'arbre
+                {
+                     // Si le score du noeud est supérieur au meilleur score
+                     // Dans le cas ou c'est le seul coup possible
+                    if(noeud->score > meilleurScore)
+                    {
+                        meilleurScore = noeud->score;
+                        meilleurCoup = remonterArbre(noeud);
+                    }
+
+                    // Si on est à la profondeur 1, on est remonter en haut de l'arbre, on arrête de remonter
+                    if(noeud->profondeur != 1)
+                    {
+                        item * temp = noeud;
+                        noeud = noeud->parent;
+                        libererItem(temp);
+                    }
+
+                    // On remonte l'arbre tant que le suivant est null / tant qu'on est à la fin de la branche de l'arbre
+                    // Si on est à la profondeur 1, on est remonter en haut de l'arbre, on arrête de remonter
+                    while(noeud->suivant == NULL && noeud->profondeur != 1)
+                    {
+                        // On libère la branche de l'arbre
+                        while(noeud->precedent != NULL)
+                        {
+                            noeud = noeud->precedent;
+                            libererItem(noeud->suivant);
                         }
+
+                        // On remonte l'arbre en liberant le "fils" du noeud actuel
+                        // tmp car on a pas de lien avec le noeud "fils" une fois qu'on est au parent
+                        item * temp = noeud;
+                        noeud = noeud->parent;
+                        libererItem(temp);
+                    }
+                    
+                    // On continue à parcourir l'arbre
+                    if(noeud->suivant != NULL) 
+                    {
+                        noeud = noeud->suivant;
+                        minmax(noeud, meilleurCoup, meilleurScore);
+                    }
+                    else // Si on est arrivé à la fin de l'arbre, on appelle la fonction minmax pour arriver dans le cas terminal
+                    {
+                        minmax(noeud, meilleurCoup, meilleurScore);
                     }
                 }
             }
         }
     }
-}
-
-// Fonction wrapper pour initialiser la recherche
-liste *generationCoups2(item *noeud, int couleur) {
-    liste *coups = creerListe();
-    generationCoupsRec(noeud, coups, couleur, noeud->profondeur);
-    return coups;
-}
-int minimax(item *noeud, int profondeur, int couleur, int maximizingPlayer) {
-    if (profondeur == 0 || estEchecMat(noeud->tableau, couleur)) {
-        return calculScore(noeud, couleur);
-    }
-
-    int meilleurScore = maximizingPlayer ? INT_MIN : INT_MAX;
-
-    liste *coups = generationCoups(noeud, couleur);
-    for (item *coup = coups->premier; coup != NULL; coup = coup->suivant) {
-        int score = minimax(coup, profondeur - 1, 3 - couleur, !maximizingPlayer);
-        if (maximizingPlayer) {
-            meilleurScore = max(meilleurScore, score);
-        } else {
-            meilleurScore = min(meilleurScore, score);
-        }
-    }
-    return meilleurScore;
-}
-
-item *trouverMeilleurCoup(item *etatInitial, int couleur) {
-    int meilleurScore = INT_MIN;
-    item *meilleurCoup = NULL;
-
-    liste *coups = generationCoups(etatInitial, couleur);
-    for (item *coup = coups->premier; coup != NULL; coup = coup->suivant) {
-        int score = minimax(coup, 4 - 1, 3 - couleur, 0);  // 0 indique le joueur minimisant après ce coup
-        if (score > meilleurScore) {
-            meilleurScore = score;
-            meilleurCoup = coup;
-        }
-    }
-    return meilleurCoup;
-}
-
-void affichetouslescoupsRec(item * noeud){
-    if(noeud->profondeur == 4){
-        afficherTableau(noeud->tableau);
-        return;
-    }
-    else {
-        afficherTableau(noeud->tableau);
-        affichetouslescoupsRec(noeud->suivant);
-    
-    }
-}
-void affichetouslescoups(liste * coups){
-    item * courant = coups->premier;
-    //affichetouslescoupsRec(courant);
-    while(courant->profondeur != 4){
-        afficherTableau(courant->tableau);
-        courant = courant->suivant;
-    }
-
-
 }

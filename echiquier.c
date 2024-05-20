@@ -1,11 +1,11 @@
 #include "echiquier.h"
 
-int **initialisationPartie()
+char **initialisationPartie()
 {
-    int **initial = (int**)malloc(tailleTableau*sizeof(int*));
+    char **initial = (char **)malloc(tailleTableau*sizeof(char *));
     for (int i=0; i<tailleTableau; i=i+1)
     {
-        initial[i] = (int*)malloc(tailleTableau*sizeof(int));
+        initial[i] = (char *)malloc(tailleTableau*sizeof(int));
     }
     // 0 : Case vide
     // 1 : Pion
@@ -63,13 +63,13 @@ int **initialisationPartie()
     return initial;
 }
 
-int ** copieTableau(int **tableau)
+char ** copieTableau(char **tableau)
 {
     // Création d'un tableau de la même taille
-    int **copie = (int**)malloc(tailleTableau*sizeof(int*));
+    char **copie = (char **)malloc(tailleTableau*sizeof(char *));
     for (int i=0; i<tailleTableau; i=i+1)
     {
-        copie[i] = (int*)malloc(tailleTableau*sizeof(int));
+        copie[i] = (char *)malloc(tailleTableau*sizeof(int));
     }
 
     // Copie des valeurs
@@ -77,7 +77,7 @@ int ** copieTableau(int **tableau)
     {
         for(int j=0; j<tailleTableau; j=j+1)
         {
-            copie[j][i] = tableau[j][i];
+            copie[i][j] = tableau[i][j];
         }
     }
 

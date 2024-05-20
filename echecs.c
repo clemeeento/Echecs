@@ -2,134 +2,156 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "item.h"
 #include "liste.h"
 #include "echiquier.h"
 #include "deplacement.h"
 #include "minmax.h"
-
-void afficherTableau(int **tableau)
-{
-    printf("\n");
-    for(int i=0; i<tailleTableau; i=i+1)
-    {
-        for(int j=0; j<tailleTableau; j=j+1)
-        {
-            printf("%d ", tableau[j][i]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}        
-
-
-void testDeplacement(int ** tableau)
-{
-    int tour = 1;
-    int initiale, finale;
-    while(!estEchecMat(tableau, tour))
-    {
-        while(tour==1)
-        {
-            printf("Tour des blancs \n");
-            printf("Entrer la position de la pièce que l'on veut deplacer :\n");
-            scanf("%d",initiale);
-            printf("Entrer position finale :\n");
-            scanf("%d",finale);
-            if(deplacementValide(tableau, initiale/10, initiale%10, finale/10, finale%10) && tableau[initiale/10][initiale%10]/10 == tour)
-            {
-                deplacement(tableau, initiale/10, initiale%10, finale/10, finale%10);  
-                afficherTableau(tableau);    
-                tour = 2; 
-            }
-            
-        }
-
-        while(tour==2)
-        {
-            printf("Tour des noirs \n");
-            printf("Entrer la position de la pièce que l'on veut deplacer :\n");
-            scanf("%d",initiale);
-            printf("Entrer position finale :\n");
-            scanf("%d",finale);
-            if(deplacementValide(tableau, initiale/10, initiale%10, finale/10, finale%10) && tableau[initiale/10][initiale%10]/10 == tour)
-            {
-                deplacement(tableau, initiale/10, initiale%10, finale/10, finale%10);  
-                tour = 1; 
-            }
-        }
-    }
-}
-void startGame()
-{
-    int **tableau = initialisationPartie();
-    int initialX, initialY, finalX, finalY;
-    item * noeud = creerItem();
-    noeud->tableau = tableau;
-    afficherTableau(noeud->tableau);
-    int joueur= 1 ; 
-    while(estEchecMat(noeud->tableau, joueur) == 0)
-    {
-        if(joueur == 1)
-        {
-            joueur = 2;
-    printf("Choissiseez la ligne et en suite la colonne de la piece que vous voulez deplacer\n");
-    scanf("%d", &initialX);
-    scanf("%d", &initialY);
-    scanf("%d", &finalX);
-    scanf("%d", &finalY);
-    if(deplacementValide(noeud->tableau, initialX, initialY, finalX, finalY) == 1){
-    deplacement(noeud->tableau, initialX, initialY, finalX, finalY);
-    afficherTableau(noeud->tableau);}
-        }
-        else
-        {
-            noeud = trouverMeilleurCoup(noeud, joueur);
-            afficherTableau(noeud->tableau);
-            joueur = 1;
-
-        }
-    
-
-    
-
-
-
-
-    
-    
-    
-    }}
-
-void testpartie(int ** tableau)
-{   int a = 1;
-    int i = 0 ; 
-    item * noeud = creerItem();
-
-    while (estEchecMat(tableau, a) == 0 )
-    {
-        if(a == 1)
-        {
-            a = 2;
-        }
-        else
-        {
-            a = 1;
-        }
-    noeud->tableau = tableau;
-        afficherTableau(noeud->tableau);        
-
-    noeud = trouverMeilleurCoup(noeud, a);
-    afficherTableau(noeud->tableau);   
-    tableau = noeud->tableau;     
-    i++;}
-      
-    
-
-}
+#include "graphique.h"
+ 
 
 int main()
 {
-    startGame( );
+    int quit = 0;
+    int tour = 1;
+    int x, y;
+    int initialX, initialY, finalX, finalY;
+    int meuilleurScore;
+    char ** meilleurCoup;
+
+    char ** echiquier = initialisationPartie();
+
+
+    // Initialiser SDL
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
+        printf("Erreur lors de l'initialisation de SDL: %s\n", SDL_GetError());
+        return 0;
+    }
+    
+    // Créer une fenêtre
+    SDL_Window* window = SDL_CreateWindow("Échecs", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LARGEUR_FENETRE, HAUTEUR_FENETRE, SDL_WINDOW_SHOWN);
+    if (window == NULL)
+    {
+        printf("Erreur lors de la création de la fenêtre: %s\n", SDL_GetError());
+        SDL_Quit();
+        return 0;
+    }
+    
+    // Créer un renderer
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL)
+    {
+        printf("Erreur lors de la création du renderer: %s\n", SDL_GetError());
+        SDL_Quit();
+        return 0;
+    }
+    
+    // Charger les textures des pièces
+    SDL_Texture** pieces = chargerPieces(renderer);
+    if (pieces == NULL)
+    {
+        printf("Erreur lors du chargement des textures des pièces\n");
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 0;
+    }
+    
+    // Boucle principale
+    SDL_Event event;
+    while (!quit)
+    {
+        if (tour != COULEUR_IA) // Joueur
+        {
+           if (SDL_WaitEvent(&event))
+            {
+                if (event.type == SDL_QUIT)
+                {
+                    quit = 1;
+                }
+
+                if (event.type == SDL_MOUSEBUTTONDOWN)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    
+                    // Convertir les coordonnées de la souris en coordonnées de l'échiquier
+                    initialX = x / (LARGEUR_FENETRE / tailleTableau);
+                    initialY = y / (HAUTEUR_FENETRE / tailleTableau);
+                    
+                }   
+                if(event.type == SDL_MOUSEBUTTONUP)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    
+                    // Convertir les coordonnées de la souris en coordonnées de l'échiquier
+                    finalX = x / (LARGEUR_FENETRE / tailleTableau);
+                    finalY = y / (HAUTEUR_FENETRE / tailleTableau);
+
+                    if(echiquier[initialX][initialY]/10 == tour)
+                    {
+                        if(deplacementValide(echiquier, initialX, initialY, finalX, finalY))
+                        {
+                            deplacement(echiquier, initialX, initialY, finalX, finalY);
+                            tour = 3 - tour;
+                        }
+                    }
+                }
+            }
+        }
+        else // Ordinateur
+        {
+            item * noeud = creerItem();
+            noeud->tableau = copieTableau(echiquier);
+
+            meuilleurScore = -1000;
+            meilleurCoup = NULL;
+
+            echiquier = minmax(noeud, meilleurCoup, meuilleurScore);
+
+            tour = 3 - tour;
+
+            libererItem(noeud);
+        }
+
+        // Effacer le renderer
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        
+        // Afficher l'échiquier et les pieces
+        afficherEchiquier(renderer);
+        afficherPieces(pieces, echiquier, renderer);
+        
+        // Mettre à jour l'affichage
+        SDL_RenderPresent(renderer);
+
+        if(estEchecMat(echiquier, tour))
+        {
+            printf("Echec et mat\n");
+            printf("Le joueur %d a perdu\n", tour);
+            
+            while (!quit) 
+            {
+                if (SDL_WaitEvent(&event)) 
+                {
+                    if (event.type == SDL_QUIT) 
+                    {
+                        quit = 1;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Libérer les ressources
+    for (int i = 0; i < 12; i++)
+    {
+        SDL_DestroyTexture(pieces[i]);
+    }
+    free(pieces);
+    
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
     return 0;
 }
