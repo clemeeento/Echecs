@@ -104,11 +104,19 @@ int calculScore(char ** tableau, int scoreParent)
         }
     }
 
+    if(estEchec(tableau, COULEUR_IA))
+    {
+        score = score - 10;
+    }
+    if (estEchec(tableau, 3 - COULEUR_IA))
+    {
+        score = score + 10;
+    }
+    
     if(estEchecMat(tableau, COULEUR_IA))
     {
         score = score - 100;
     }
-
     if(estEchecMat(tableau, 3 - COULEUR_IA))
     {
         score = score + 100;
