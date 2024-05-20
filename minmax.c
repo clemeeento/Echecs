@@ -103,6 +103,7 @@ int calculScore(char ** tableau, int scoreParent)
             }
         }
     }
+
     if(estEchecMat(tableau, COULEUR_IA))
     {
         score = score - 100;
@@ -127,10 +128,6 @@ liste * generationCoups(item * noeud, int couleur)
 
     coup * coupsPossibles = NULL;
     
-    if(noeud == NULL)
-    {
-        printf("Noeud Null lors de la géneration\n");
-    }
 
     // On parcourt le tableau pour trouver les pièces de la couleur du joueur
     for(int i=0; i<tailleTableau; i=i+1) // i = ligne de la pièce
@@ -164,6 +161,7 @@ liste * generationCoups(item * noeud, int couleur)
 
     for(int i=0; i<6 && i < nombreCoups; i=i+1)
     {
+        nouveauNoeud = NULL;
         nouveauNoeud = creerItem();
         nouveauNoeud->tableau = copieTableau(coupsPossibles[i].tableau);
         nouveauNoeud->score = coupsPossibles[i].score;
@@ -175,11 +173,12 @@ liste * generationCoups(item * noeud, int couleur)
 
     for (int i = 0; i < nombreCoups; i=i+1)
     {
-        if (coupsPossibles[i].tableau != NULL) {
+        if (coupsPossibles[i].tableau != NULL) 
+        {
             libererTableau(coupsPossibles[i].tableau, tailleTableau);
         }
     }
-
+    
     free(coupsPossibles);
 
     return coups;
@@ -201,7 +200,7 @@ char ** remonterArbre(item * noeud)
 char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
 {  
     int couleur;
-   
+
     // Cas Terminal, on a fini de parcourir l'arbre
     if(noeud->suivant == NULL  && noeud->profondeur == 1)
     {
@@ -224,7 +223,7 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
     {
         // Si on est à une profondeur inférieure à la profondeur maximale ou si le score est supérieur à -15
         // On génère les coups suivants
-        if(noeud->profondeur < PROFONDEUR && noeud->score > -15)
+        if(noeud->profondeur < PROFONDEUR && noeud->score > -15 && !estEchecMat(noeud->tableau, 3 - COULEUR_IA))
         {
             // Déterminer la couleur des coups à générer
             if(noeud->profondeur%2 == 0)
@@ -275,7 +274,7 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                 item * temp = noeud;
                 noeud = noeud->parent;
                 libererItem(temp);
-                
+
                 // On remonte l'arbre tant que le suivant est null / tant qu'on est à la fin de la branche de l'arbre
                 // Si on est à la profondeur 1, on est remonter en haut de l'arbre, on arrête de remonter
                 while(noeud->suivant == NULL && noeud->profondeur != 1)
@@ -283,17 +282,20 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                     // On libère la branche de l'arbre
                     while(noeud->precedent != NULL)
                     {
-                        noeud = noeud->precedent;
-                        libererItem(noeud->suivant);
+                        // printf("prof1 %d\n", noeud->profondeur);
+                        if(noeud->precedent->tableau != NULL)
+                        {
+                            noeud = noeud->precedent;
+                            libererItem(noeud->suivant);
+                        }
                     } 
-    
+
                     // On remonte l'arbre en liberant le "fils" du noeud actuel
                     // tmp car on a pas de lien avec le noeud "fils" une fois qu'on est au parent
                     item * temp = noeud;
                     noeud = noeud->parent;
                     libererItem(temp);
                 }
-                
                 // On continue à parcourir l'arbre
                 if(noeud->suivant != NULL) 
                 {
@@ -307,7 +309,7 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
             else
             {
                 // Si on est à une profondeur inférieure à la profondeur maximale on est donc dans le cas ou le score est inférieur à -15
-
+                
                 // Si on a pas fini de parcourir la branche de l'arbre
                 if(noeud->suivant != NULL)
                 {

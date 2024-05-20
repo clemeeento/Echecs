@@ -34,20 +34,34 @@ void libererTableau(char **tableau, int taille)
 {
     for(int i = 0; i < taille; i=i+1) 
     {
-        free(tableau[i]);
+        if(tableau[i] != NULL) 
+        {
+            free(tableau[i]);
+        }
     }
     free(tableau);
 }
 
 void libererItem(item *noeud) 
 {
-    if(noeud) 
+
+    if(noeud != NULL) 
     {
-        if(noeud->tableau) 
+        if(noeud->tableau != NULL) 
         {
             libererTableau(noeud->tableau, noeud->taille);
         }
+        else
+        {
+            printf("Erreur : tableau NULL lors de la liberation\n");
+            fflush(stdout);
+        }
         free(noeud);
+    }
+    else
+    {
+        printf("Erreur : noeud NULL lors de la liberation\n");
+        fflush(stdout);
     }
 }
 
@@ -183,5 +197,3 @@ void ajouterDernier(liste * l, item * noeud)
 
     l->nombreElements = l->nombreElements + 1;
 }
-
-

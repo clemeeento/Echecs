@@ -553,7 +553,7 @@ int deplacementValide(char ** tableau, int initialX, int initialY, int finalX, i
             return 0;
         }
 
-        free(temporaire);
+        libererTableau(temporaire,tailleTableau);
         return 1;
     }
     return 0;
