@@ -9,7 +9,7 @@
 #include "echiquier.h"
 #include "deplacement.h"
 
-#define PROFONDEUR 5
+#define PROFONDEUR 6
 #define COULEUR_IA 2
 
 typedef struct 

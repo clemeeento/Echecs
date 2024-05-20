@@ -104,7 +104,7 @@ int main()
             noeud->tableau = copieTableau(echiquier);
 
             meuilleurScore = -1000;
-            meilleurCoup = copieTableau(echiquier);
+            meilleurCoup = NULL;
 
             echiquier = minmax(noeud, meilleurCoup, meuilleurScore);
 

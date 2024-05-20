@@ -27,6 +27,19 @@ int comparerCoup(const void *a, const void *b)
     return coupB->score - coupA->score; // Tri décroissant par score
 }
 
+char ** remonterArbre(item * noeud)
+{
+    item * temp = noeud;
+    char ** tmpTableau;
+    while(temp->profondeur != 1)
+    {
+        temp = temp->parent;
+    }
+    tmpTableau = copieTableau(temp->tableau);
+
+    return tmpTableau;
+}
+
 int calculScore(char ** tableau, int scoreParent)
 {
     int score = 0;
@@ -106,11 +119,11 @@ int calculScore(char ** tableau, int scoreParent)
 
     if(estEchec(tableau, COULEUR_IA))
     {
-        score = score - 10;
+        score = score - 4;
     }
     if (estEchec(tableau, 3 - COULEUR_IA))
     {
-        score = score + 10;
+        score = score + 4;
     }
     
     if(estEchecMat(tableau, COULEUR_IA))
@@ -153,10 +166,15 @@ liste * generationCoups(item * noeud, int couleur)
                         // Si le déplacement est valide
                         if(deplacementValide(noeud->tableau, i, j, k, l))
                         {
+                            // On incrémente le nombre de coups possibles
                             nombreCoups = nombreCoups + 1;
+                            // On réalloue la mémoire pour le tableau des coups possibles
                             coupsPossibles = realloc(coupsPossibles, nombreCoups * sizeof(coup));
+                            // On copie le tableau actuel
                             coupsPossibles[nombreCoups - 1].tableau = copieTableau(noeud->tableau);
+                            // On effectue le déplacement
                             deplacement(coupsPossibles[nombreCoups - 1].tableau, i, j, k, l);
+                            // On calcule le score du coup effectué
                             coupsPossibles[nombreCoups - 1].score = calculScore(coupsPossibles[nombreCoups - 1].tableau, noeud->score);
                         }
                     }
@@ -165,20 +183,29 @@ liste * generationCoups(item * noeud, int couleur)
         }
     }
 
+    // On trie les coups possibles par score
     qsort(coupsPossibles, nombreCoups, sizeof(coup), comparerCoup);
 
+    // On garde les 6 meilleurs coups
     for(int i=0; i<6 && i < nombreCoups; i=i+1)
-    {
-        nouveauNoeud = NULL;
+    {   
+        // On initialise un nouvel item
         nouveauNoeud = creerItem();
+        // On copie le tableau du coup possible
         nouveauNoeud->tableau = copieTableau(coupsPossibles[i].tableau);
+        // On copie le score du coup possible
         nouveauNoeud->score = coupsPossibles[i].score;
+        // On incrémente la profondeur du nouvel item
         nouveauNoeud->profondeur = noeud->profondeur + 1;
+        // On lui attribue la taille du tableau
         nouveauNoeud->taille = tailleTableau;
+        // On le lie à son parent
         nouveauNoeud->parent = noeud;
+        // On ajoute le nouvel item à la liste des coups
         ajouterDernier(coups, nouveauNoeud);
     }
 
+    // On libère la mémoire des coups possibles
     for (int i = 0; i < nombreCoups; i=i+1)
     {
         if (coupsPossibles[i].tableau != NULL) 
@@ -186,23 +213,9 @@ liste * generationCoups(item * noeud, int couleur)
             libererTableau(coupsPossibles[i].tableau, tailleTableau);
         }
     }
-    
     free(coupsPossibles);
 
     return coups;
-}
-
-char ** remonterArbre(item * noeud)
-{
-    item * temp = noeud;
-    char ** tmpTableau;
-    while(temp->profondeur != 1)
-    {
-        temp = temp->parent;
-    }
-    tmpTableau = copieTableau(temp->tableau);
-
-    return tmpTableau;
 }
 
 char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
@@ -250,7 +263,7 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
             noeud = coups->premier;
 
             // On libère la liste des coups 
-            //Car plus utile une fois les coups générés (il faudrait trouver un autre moyen que les listes pour générer les coups)
+            // Car plus utile une fois les coups générés (il faudrait trouver un autre moyen que les listes pour générer les coups)
             free(coups);
 
             // On appelle la fonction minmax pour le premier coup généré
@@ -290,12 +303,8 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                     // On libère la branche de l'arbre
                     while(noeud->precedent != NULL)
                     {
-                        // printf("prof1 %d\n", noeud->profondeur);
-                        if(noeud->precedent->tableau != NULL)
-                        {
-                            noeud = noeud->precedent;
-                            libererItem(noeud->suivant);
-                        }
+                        noeud = noeud->precedent;
+                        libererItem(noeud->suivant);
                     } 
 
                     // On remonte l'arbre en liberant le "fils" du noeud actuel
@@ -304,6 +313,7 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                     noeud = noeud->parent;
                     libererItem(temp);
                 }
+
                 // On continue à parcourir l'arbre
                 if(noeud->suivant != NULL) 
                 {
@@ -314,6 +324,7 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                     minmax(noeud, meilleurCoup, meilleurScore);
                 }
             }
+
             else
             {
                 // Si on est à une profondeur inférieure à la profondeur maximale on est donc dans le cas ou le score est inférieur à -15
@@ -363,7 +374,6 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
                     if(noeud->suivant != NULL) 
                     {
                         noeud = noeud->suivant;
-                        libererItem(noeud->precedent);
                         minmax(noeud, meilleurCoup, meilleurScore);
                     }
                     else // Si on est arrivé à la fin de l'arbre, on appelle la fonction minmax pour arriver dans le cas terminal
