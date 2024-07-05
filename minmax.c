@@ -44,7 +44,6 @@ char ** remonterArbre(item * noeud)
 int calculScore(char ** tableau, int scoreParent)
 {
     int score = 0;
-    int mobilité = 0;
 
     for(int i=0; i<tailleTableau; i=i+1)
     {
@@ -55,33 +54,33 @@ int calculScore(char ** tableau, int scoreParent)
                 // On attribue un score à chaque pièce
                 if(tableau[i][j]%10 == 1) // Pion
                 {
-                    score = score + 1;
+                    score = score + 10;
                 }
                 else if(tableau[i][j]%10 == 2) // Cavalier
                 {
-                    score = score + 3;
+                    score = score + 30;
                 }
                 else if(tableau[i][j]%10 == 3) // Fou
                 {
-                    score = score + 3;
+                    score = score + 30;
                 }
                 else if(tableau[i][j]%10 == 4) // Tour
                 {
-                    score = score + 5;
+                    score = score + 50;
                 }
                 else if(tableau[i][j]%10 == 5) // Dame
                 {
-                    score = score + 9;
+                    score = score + 90;
                 }
 
                 if ((i == 3 || i == 4) && (j == 3 || j == 4)) // Cases centrales
                 { 
-                    score = score + 1;
+                    score = score + 10;
                 }
 
                 if ((i == 3 || i == 4) && (j == 2 || j == 5)) // Cases centrales
                 { 
-                    score = score + 0.5;
+                    score = score + 5;
                 }
 
                 // On attribue un score à la mobilité de la pièce
@@ -91,7 +90,7 @@ int calculScore(char ** tableau, int scoreParent)
                     {
                         if(deplacementValide(tableau, i, j, k, l))
                         {
-                            mobilité = mobilité + 0.1;
+                            score = score + 1;
                         }
                     }
                 }
@@ -102,33 +101,33 @@ int calculScore(char ** tableau, int scoreParent)
                 // On attribue un score à chaque pièce
                 if(tableau[i][j]%10 == 1) // Pion
                 {
-                    score = score - 1;
+                    score = score - 10;
                 }
                 else if(tableau[i][j]%10 == 2) // Cavalier
                 {
-                    score = score - 3;
+                    score = score - 30;
                 }
                 else if(tableau[i][j]%10 == 3) // Fou
                 {
-                    score = score - 3;
+                    score = score - 30;
                 }
                 else if(tableau[i][j]%10 == 4) // Tour
                 {
-                    score = score - 5;
+                    score = score - 50;
                 }
                 else if(tableau[i][j]%10 == 5) // Dame
                 {
-                    score = score - 9;
+                    score = score - 90;
                 }
 
                 if ((i == 3 || i == 4) && (j == 3 || j == 4)) // Cases centrales
                 { 
-                    score = score - 1;
+                    score = score - 10;
                 }
 
                 if ((i == 3 || i == 4) && (j == 2 || j == 5)) // Cases centrales
                 { 
-                    score = score - 0.5;
+                    score = score - 5;
                 }
                 // On attribue un score à la mobilité de la pièce
                 for(int k=0; k<tailleTableau; k=k+1)
@@ -137,7 +136,7 @@ int calculScore(char ** tableau, int scoreParent)
                     {
                         if(deplacementValide(tableau, i, j, k, l))
                         {
-                            mobilité = mobilité - 0.1;
+                            score = score - 1;
                         }
                     }
                 }
@@ -147,20 +146,20 @@ int calculScore(char ** tableau, int scoreParent)
 
     if(estEchec(tableau, COULEUR_IA))
     {
-        score = score - 4;
+        score = score - 40;
     }
     if (estEchec(tableau, 3 - COULEUR_IA))
     {
-        score = score + 4;
+        score = score + 40;
     }
     
     if(estEchecMat(tableau, COULEUR_IA))
     {
-        score = score - 50;
+        score = score - 500;
     }
     if(estEchecMat(tableau, 3 - COULEUR_IA))
     {
-        score = score + 50;
+        score = score + 500;
     }
 
     score = scoreParent + score;
@@ -176,7 +175,7 @@ liste * generationCoups(item * noeud, int couleur)
     int nombreCoups = 0;
 
     coup * coupsPossibles = NULL;
-    
+    printf("couleur : %d\n", couleur);
     // On parcourt le tableau pour trouver les pièces de la couleur du joueur
     for(int i=0; i<tailleTableau; i=i+1) // i = ligne de la pièce
     {
@@ -203,6 +202,7 @@ liste * generationCoups(item * noeud, int couleur)
                             deplacement(coupsPossibles[nombreCoups - 1].tableau, i, j, k, l);
                             // On calcule le score du coup effectué
                             coupsPossibles[nombreCoups - 1].score = calculScore(coupsPossibles[nombreCoups - 1].tableau, noeud->score);
+                            printf("score : %d\n", coupsPossibles[nombreCoups - 1].score);
                         }
                     }
                 }
@@ -212,7 +212,7 @@ liste * generationCoups(item * noeud, int couleur)
 
     // On trie les coups possibles par score
     qsort(coupsPossibles, nombreCoups, sizeof(coup), comparerCoup);
-
+    printf("6 meilleurs coups : \n");
     // On garde les 6 meilleurs coups
     for(int i=0; i<6 && i < nombreCoups; i=i+1)
     {   
@@ -230,6 +230,7 @@ liste * generationCoups(item * noeud, int couleur)
         nouveauNoeud->parent = noeud;
         // On ajoute le nouvel item à la liste des coups
         ajouterDernier(coups, nouveauNoeud);
+        printf("score : %d\n", coupsPossibles[i].score);
     }
 
     // On libère la mémoire des coups possibles
