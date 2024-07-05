@@ -40,15 +40,19 @@ char ** remonterArbre(item * noeud)
     return tmpTableau;
 }
 
+
 int calculScore(char ** tableau, int scoreParent)
 {
     int score = 0;
+    int mobilité = 0;
+
     for(int i=0; i<tailleTableau; i=i+1)
     {
         for(int j=0; j<tailleTableau; j=j+1)
         {
             if(tableau[i][j]/10 == COULEUR_IA)
             {
+                // On attribue un score à chaque pièce
                 if(tableau[i][j]%10 == 1) // Pion
                 {
                     score = score + 1;
@@ -80,9 +84,22 @@ int calculScore(char ** tableau, int scoreParent)
                     score = score + 0.5;
                 }
 
+                // On attribue un score à la mobilité de la pièce
+                for(int k=0; k<tailleTableau; k=k+1)
+                {
+                    for(int l=0; l<tailleTableau; l=l+1)
+                    {
+                        if(deplacementValide(tableau, i, j, k, l))
+                        {
+                            mobilité = mobilité + 0.1;
+                        }
+                    }
+                }
+
             }
             if(tableau[i][j]/10 == 3 - COULEUR_IA)
             {
+                // On attribue un score à chaque pièce
                 if(tableau[i][j]%10 == 1) // Pion
                 {
                     score = score - 1;
@@ -113,6 +130,17 @@ int calculScore(char ** tableau, int scoreParent)
                 { 
                     score = score - 0.5;
                 }
+                // On attribue un score à la mobilité de la pièce
+                for(int k=0; k<tailleTableau; k=k+1)
+                {
+                    for(int l=0; l<tailleTableau; l=l+1)
+                    {
+                        if(deplacementValide(tableau, i, j, k, l))
+                        {
+                            mobilité = mobilité - 0.1;
+                        }
+                    }
+                }
             }
         }
     }
@@ -128,11 +156,11 @@ int calculScore(char ** tableau, int scoreParent)
     
     if(estEchecMat(tableau, COULEUR_IA))
     {
-        score = score - 100;
+        score = score - 50;
     }
     if(estEchecMat(tableau, 3 - COULEUR_IA))
     {
-        score = score + 100;
+        score = score + 50;
     }
 
     score = scoreParent + score;
@@ -149,7 +177,6 @@ liste * generationCoups(item * noeud, int couleur)
 
     coup * coupsPossibles = NULL;
     
-
     // On parcourt le tableau pour trouver les pièces de la couleur du joueur
     for(int i=0; i<tailleTableau; i=i+1) // i = ligne de la pièce
     {
@@ -237,6 +264,9 @@ char ** minmax(item * noeud, char ** meilleurCoup, int meilleurScore)
             noeud = noeud->precedent;
             libererItem(noeud->suivant);
         }
+
+        // On libère le dernier noeud
+        libererItem(noeud);
 
         return meilleurCoup;
     }
