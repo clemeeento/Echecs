@@ -62,6 +62,6 @@ L'interface graphique du jeu a été réalisée avec SDL2, qui gère l'affichage
 - `liste.c` et `liste.h` : Utilitaires pour la gestion des listes de mouvements dans le jeu.
 - `Makefile` : Fichier pour automatiser la compilation du projet.
 
-## Auteurs
-
-Ce projet a été réalisé par **Clément Furnon** et **Wassim Bouteldja** dans le cadre du cours **IA & Jeux**.
+## Contributeurs
+* **BOUTELDJA Wassim**
+* **FURNON Clément**
