@@ -63,5 +63,5 @@ L'interface graphique du jeu a été réalisée avec SDL2, qui gère l'affichage
 - `Makefile` : Fichier pour automatiser la compilation du projet.
 
 ## Contributeurs
-* **BOUTELDJA Wassim**
-* **FURNON Clément**
+* BOUTELDJA Wassim
+* FURNON Clément
