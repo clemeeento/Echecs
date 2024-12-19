@@ -64,4 +64,3 @@ L'interface graphique du jeu a été réalisée avec SDL2, qui gère l'affichage
 
 ## Contributeurs
 * BOUTELDJA Wassim
-* FURNON Clément
